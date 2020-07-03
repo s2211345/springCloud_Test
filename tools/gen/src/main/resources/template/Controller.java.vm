@@ -1,0 +1,74 @@
+package ${package}.controller;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import ${package}.dto.PageDTO;
+import ${package}.model.${className};
+import ${package}.service.${className}Service;
+import ${package}.model.${className};
+import ${package}.vo.req.${className}ReqVO;
+import ${package}.vo.resp.${className}RespVO;
+
+import java.util.List;
+
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Api("${comments}")
+@RestController
+@RequestMapping("/${pathName}")
+@Slf4j
+public class ${className}Controller{
+	@Autowired
+	private ${className}Service ${classname}Service;
+
+	@PostMapping("/getList")
+	@ApiOperation(value = "列表")
+	public PageDTO<List<${className}RespVO>> list(@RequestBody ${className}ReqVO ${classname}ReqVO) {
+		if(0 != ${classname}ReqVO.getPage() && 0 != ${classname}ReqVO.getLimit()){
+			int page = (${classname}ReqVO.getPage()-1) * ${classname}ReqVO.getLimit();
+				${classname}ReqVO.setPage(page);
+		}
+		PageDTO<List<${className}RespVO>> result =  ${classname}Service.getList(${classname}ReqVO);
+		return result;
+	}
+
+	@GetMapping("/{id}")
+	@ApiOperation(value = "根据id获取")
+	public ${className} get(@PathVariable Integer id) {
+		return ${classname}Service.selectByPrimaryKey(id);
+	}
+
+	@PostMapping
+	@ApiOperation(value = "保存")
+	public ${className} save(@RequestBody ${className} ${classname}) throws Exception{
+		if(StringUtils.isBlank(${classname}.getName())){
+			throw new IllegalArgumentException("没有名称");
+		}
+		${classname}Service.insertSelective(${classname});
+		return ${classname};
+	}
+
+	@PutMapping
+	@ApiOperation(value = "修改")
+	public ${className} update(@RequestBody ${className} ${classname}) {
+			${classname}Service.updateByPrimaryKeySelective(${classname});
+		return ${classname};
+	}
+
+	@DeleteMapping("/{id}")
+	@ApiOperation(value = "删除")
+	public void delete(@PathVariable Long id) {
+			${classname}Service.delete(id);
+	}
+	
+}

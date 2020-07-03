@@ -1,0 +1,36 @@
+package ${package}.model;
+
+import java.io.Serializable;
+import java.util.Date;
+import lombok.Data;
+import java.math.BigDecimal;
+
+#if(${hasBigDecimal})
+import java.math.BigDecimal;
+#end
+#if(${hasDate})
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.open.capacity.utils.DateUtils;
+#end
+
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Data
+public class ${className}ReqVO {
+	
+#foreach ($column in $columns)
+	// $column.comments
+#if($column.hasDate)
+	@JsonFormat(timezone = "GMT+8", pattern = DateUtils.DATE_TIME_PATTERN)
+#end
+	private $column.attrType $column.attrname;
+#end
+
+	private int page = 1;  //当前页码
+	private int limit = 10; //当页展示多少条数据
+}

@@ -1,0 +1,180 @@
+$(function () {
+    $("#jqGrid").jqGrid({
+        url: '../../${pathName}/list',
+        datatype: "json",
+        colModel: [			
+#foreach($column in $columns)
+#if($column.columnName == $pk.columnName || $column.columnName == 'version')
+			{ label: '${column.attrname}', name: '${column.attrname}', index: '${column.columnName}', width: 50, hidden: true },
+#else
+			{ label: '${column.comments}', name: '${column.attrname}', index: '${column.columnName}', width: 70 }#if($velocityCount != $columns.size()), #end
+			
+#end			
+#end
+        ],
+		viewrecords: true,
+        height: 385,
+        rowNum: 10,
+		rowList : [10,30,50],
+        rownumbers: true, 
+        rownumWidth: 25, 
+        autowidth:true,
+        multiselect: true,
+        pager: "#jqGridPager",
+        jsonReader : {
+            root: "page.list",
+            page: "page.pageNum",
+            total: "page.pages",
+            records: "page.total"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+        	$("img").viewer();//在jqgrid结束后加载图片放大插件
+        }
+    });
+});
+
+var vm = new Vue({
+	el:'#rrapp',
+	data:{
+		showList: true,
+		title: null,
+		${classname}: {}
+	},
+	methods: {
+		query: function () {
+			$("#jqGrid").jqGrid('setGridParam',{
+      	page:1,
+      	postData:{
+#foreach($column in $columns)
+#if($column.columnName != $pk.columnName && $column.attrname != 'version')
+			'${column.attrname}': vm.${classname}.${column.attrname},
+#end
+#end
+    	},
+      }).trigger("reloadGrid"); //重新载入
+		},
+		add: function(){
+			vm.showList = false;
+			vm.title = "新增";
+			vm.${classname} = {};
+		},
+		update: function (event) {
+			event? event.cancelBubble = true : e.stopPropagation();
+			var $pk.attrname = getSelectedRow();
+			if($pk.attrname == null){
+				return ;
+			}
+			vm.showList = false;
+            vm.title = "修改";
+            
+            vm.getInfo(${pk.attrname});
+		},
+		//form表单提交已废弃，请使用html方法
+		saveOrUpdate: function () {
+			//window.editor.sync();
+			var url = vm.${classname}.${pk.attrname} == null ? "../../${pathName}/save" : "../../${pathName}/update";
+			//保存前先取富文本的值
+			//vm.${classname}.content = window.editor.html();
+			$.ajax({
+				type: "POST",
+			    url: url,
+			    data: JSON.stringify(vm.${classname}),
+			    success: function(resp){
+			    	if(resp != null && resp.code == "0"){
+						var index = layer.alert(resp.msg, {icon : 1}, function(){
+							layer.close(index);
+							vm.reload();
+						});
+					}else{
+						layer.alert(resp.msg,{icon:2});
+					}
+				}
+			});
+		},
+		del: function (event) {
+			event? event.cancelBubble = true : e.stopPropagation();
+			var ${pk.attrname}s = getSelectedRows();
+			if(${pk.attrname}s == null){
+				return ;
+			}
+			
+			confirm('确定要删除选中的记录？', function(){
+				$.ajax({
+					type: "POST",
+				    url: "../../${pathName}/delete",
+				    data: JSON.stringify(${pk.attrname}s),
+				    success: function(resp){
+						if(resp != null && resp.code == "0"){
+							var index = layer.alert(resp.msg,{icon : 1},function(){
+								layer.close(index);
+								$("#jqGrid").trigger("reloadGrid");
+							});
+						}else{
+							layer.alert(resp.msg,{icon:2});
+						}
+					}
+				});
+			});
+		},
+		deleteOne: function (id, event) {
+			event? event.cancelBubble = true : e.stopPropagation();
+			confirm('确定要删除该记录？', function(){
+				var url = "../../${pathName}/deleteOne?id="+ id;
+				var load = layer.load(1);
+				$.post(url, {}, function(resp){
+					layer.close(load);
+					if(resp != null && resp.code == "0"){
+						var index = layer.alert(resp.msg,{icon : 1},function(){
+							layer.close(index);
+							$("#jqGrid").trigger("reloadGrid");
+						});
+					}else{
+						layer.alert(resp.msg,{icon:2});
+					}
+				});
+			});
+		},
+		updateStatus: function (id, status) {
+			confirm("确定要更改该记录状态？",function(){
+				var load = layer.load(1);
+				var url = "../../${pathName}/save?id=" + id + "&status=" + status;
+				$.post(url, {'id' : $(obj).attr("id"), 'status' : status}, function(resp){
+					layer.close(load);
+					if(resp != null && resp.code == "0"){
+						var index = layer.alert(resp.msg, {icon : 1}, function(){
+							layer.close(index);
+							$("#jqGrid").trigger("reloadGrid");
+						});
+					}else{
+						layer.alert(resp.msg,{icon:2});
+					}
+				});
+			});
+		},
+		getInfo: function(${pk.attrname}){
+			$.get("../../${pathName}/info/"+${pk.attrname}, function(resp){
+                if(resp != null && resp.code == "0"){
+                    vm.${classname} = resp.${classname};
+                    //将文本先设置到textarea中
+                    //window.editor.html(vm.${classname}.content);
+                }else{
+                    layer.alert(resp.msg, {icon:2});
+                }
+            });
+		},
+		reload: function () {
+			vm.showList = true;
+			var page = $("#jqGrid").jqGrid('getGridParam','page');
+			$("#jqGrid").jqGrid('setGridParam',{ 
+                page:page
+            }).trigger("reloadGrid");
+		}
+	}
+});

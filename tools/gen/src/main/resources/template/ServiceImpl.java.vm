@@ -1,0 +1,85 @@
+package ${package}.service.impl;
+
+import ${package}.dao.base.IMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ${package}.page.table.PageTableRequest;
+import ${package}.vo.req.${className}ReqVO;
+import ${package}.vo.resp.${className}RespVO;
+import ${package}.dto.PageDTO;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import ${package}.dao.${className}Mapper;
+import ${package}.model.${className};
+import ${package}.service.${className}Service;
+import javax.annotation.Resource;
+
+
+@Service("${classname}Service")
+@Slf4j
+public class ${className}ServiceImpl implements ${className}Service {
+	@Resource
+	private ${className}Mapper ${classname}Mapper;
+	
+	@Override
+	public ${className} selectByPrimaryKey(${pk.attrType} ${pk.attrname}){
+		return ${classname}Mapper.selectByPrimaryKey(${pk.attrname});
+	}
+	
+	@Override
+	public List<${className}> list(${className} entity){
+		return ${classname}Mapper.list(entity);
+	}
+
+	@Override
+	public List<${className}> selectListByDto(${className} entity) {
+		return ${classname}Mapper.selectListByDto(entity);
+	}
+
+  	@Override
+  	public ${className} selectDtoByDto(${className} entity) {
+      	return ${classname}Mapper.selectDtoByDto(entity);
+  	}
+	
+	@Override
+	public int count(${className} entity){
+		return ${classname}Mapper.count(entity);
+	}
+	
+	@Override
+	public int insertSelective(${className} ${classname}){
+        ${classname}.setCreateTime(new Date());
+        ${classname}.setUpdateTime(new Date());
+		return ${classname}Mapper.insertSelective(${classname});
+	}
+
+	@Override
+	public int updateByPrimaryKeySelective(${className} ${classname}){
+		${classname}.setUpdateTime(new Date());
+        return ${classname}Mapper.updateByPrimaryKeySelective(${classname});
+	}
+
+	@Override
+	public PageDTO<List<${className}RespVO>> getList(${className}ReqVO reqVO) {
+		PageDTO<List<${className}RespVO>> result = new PageDTO<List<${className}RespVO>>();
+		List<${className}RespVO> list = ${classname}Mapper.getList(reqVO);
+		result.setCount(${classname}Mapper.getCount(reqVO));
+		return result.successOk(list);
+	}
+
+	@Override
+	public int getCount(${className}ReqVO reqVO) {
+		return ${classname}Mapper.getCount(reqVO);
+	}
+
+	@Override
+	public int delete(Long id) {
+		return ${classname}Mapper.delete(id);
+	}
+
+
+}

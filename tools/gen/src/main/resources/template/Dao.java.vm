@@ -1,0 +1,30 @@
+package ${package}.dao;
+
+import ${package}.model.${className};
+import ${package}.dao.base.IMapper;
+import ${package}.vo.req.${className}ReqVO;
+import ${package}.vo.resp.${className}RespVO;
+
+import org.apache.ibatis.annotations.Delete;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Mapper extends IMapper<${className}> {
+    /**
+	 * 查询列表
+	 * @return
+	 */
+    List<${className}RespVO> getList(${className}ReqVO reqVO);
+
+    int getCount(${className}ReqVO reqVO);
+
+    @Delete("update ${tableName} set status=-1 where id = #{id} ")
+    int delete(Long id);
+}

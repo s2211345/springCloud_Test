@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="${package}.dao.${className}Mapper">
+
+
+    <resultMap type="${package}.model.${className}" id="${classname}Map">
+#foreach($column in $columns)
+        <result property="${column.attrname}" column="${column.columnName}"/>
+#end
+    </resultMap>
+#*基础列*#
+    <sql id="Base_Column_List" >
+#foreach($column in $columns)
+		${alias}.${column.columnName}#if($velocityCount != $columns.size()), #end
+
+#end
+    </sql>
+
+	<sql id="where">
+		#foreach($column in $columns)
+		#if($column.columnName != $pk.columnName)
+					<if test="$column.attrname != null#if($column.dataType == 'varchar' || $column.dataType == 'datetime' || $column.dataType == 'int') and $column.attrname != ''#end">AND ${alias}.`$column.columnName` = #{$column.attrname}</if>
+		#end
+		#end
+	</sql>
+
+	<select id="selectByPrimaryKey" resultType="${package}.model.${className}" resultMap="${classname}Map">
+		select
+		<include refid="Base_Column_List" />
+		from ${tableName} ${alias}
+		where ${alias}.${pk.columnName} = #{value}
+	</select>
+
+	<select id="list" resultType="${package}.model.${className}" resultMap="${classname}Map">
+		select
+		<include refid="Base_Column_List" />
+		from ${tableName} ${alias}
+		<where>
+			<include refid="where" />
+		</where>
+      <choose>
+        <when test="sidx != null and sidx.trim() != ''">
+            order by ${sidx} ${order}
+        </when>
+				<otherwise>
+            order by ${alias}.createTime desc
+				</otherwise>
+      </choose>
+		<if test="offset != null and pageSize != null">
+			limit #{offset}, #{pageSize}
+		</if>
+	</select>
+
+	<select id="getList" resultType="${package}.vo.resp.${className}RespVO" parameterType="${package}.vo.req.${className}ReqVO">
+		select
+		<include refid="Base_Column_List" />
+		from ${tableName} ${alias}
+		<where>
+			<include refid="where" />
+		</where>
+		<if test="page != null and page != null">
+			limit #{page},#{limit}
+		</if>
+	</select>
+
+  <select id="selectListByDto" resultType="${package}.model.${className}" resultMap="${classname}Map">
+      select
+      <include refid="Base_Column_List" />
+      from ${tableName} ${alias}
+		<where>
+			<include refid="where" />
+		</where>
+      order by createTime desc
+  </select>
+
+  <select id="selectDtoByDto" resultType="${package}.model.${className}" resultMap="${classname}Map">
+      select
+      <include refid="Base_Column_List" />
+      from ${tableName} ${alias}
+	  <where>
+		  <include refid="where" />
+	  </where>
+      LIMIT 1
+  </select>
+
+ 	<select id="count" resultType="int">
+		select count(*) from ${tableName} ${alias}
+		<where>
+			<include refid="where" />
+		</where>
+	</select>
+
+	<select id="getCount" resultType="int" parameterType="${package}.vo.req.${className}ReqVO">
+		select count(*) from ${tableName} ${alias}
+		<where>
+			<include refid="where" />
+		</where>
+	</select>
+
+	<insert id="insertSelective" parameterType="${package}.model.${className}"#if($pk.extra == 'auto_increment') useGeneratedKeys="true" keyProperty="$pk.attrname"#end>
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into ${tableName}
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+#foreach($column in $columns)
+#if($column.columnName != $pk.columnName || $pk.extra != 'auto_increment')
+			<if test="$column.attrname != null">
+				`$column.columnName`,
+		  	</if>
+#end
+#end
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+#foreach($column in $columns)
+#if($column.columnName != $pk.columnName || $pk.extra != 'auto_increment')
+			<if test="$column.attrname != null">
+				#{$column.attrname},
+			</if>
+#end
+#end
+		</trim>
+	</insert>
+
+	<insert id="insertBatch" parameterType="${package}.model.${className}"#if($pk.extra == 'auto_increment') useGeneratedKeys="true" keyProperty="$pk.attrname"#end>
+		insert into ${tableName}
+		(
+#foreach($column in $columns)
+#if($column.columnName != $pk.columnName || $pk.extra != 'auto_increment')
+			`$column.columnName`#if($velocityCount != $columns.size()), #end
+
+#end
+#end
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+#foreach($column in $columns)
+#if($column.columnName != $pk.columnName || $pk.extra != 'auto_increment')
+			#{item.$column.attrname}#if($velocityCount != $columns.size()), #end
+
+#end
+#end
+			)
+		</foreach>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="${package}.model.${className}">
+		update ${tableName}
+		<set>
+#foreach($column in $columns)
+#if($column.columnName != $pk.columnName)
+			<if test="$column.attrname != null">`$column.columnName` = #{$column.attrname}#if($velocityCount != $columns.size()), #end</if>
+#end
+#end
+		</set>
+		where ${pk.columnName} = #{${pk.attrname}}
+	</update>
+
+	<delete id="deleteByPrimaryKey">
+		delete from ${tableName} where ${pk.columnName} = #{value}
+	</delete>
+
+	<delete id="deleteBatchByPrimaryKey">
+		delete from ${tableName} where ${pk.columnName} in
+		<foreach item="${pk.attrname}" collection="array" open="(" separator="," close=")">
+			#{${pk.attrname}}
+		</foreach>
+	</delete>
+
+</mapper>

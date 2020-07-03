@@ -7,6 +7,9 @@
   <groupId>com.lwc.test</groupId>
   <artifactId>springcloud</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <modules>
+    <module>tools</module>
+  </modules>
   <packaging>pom</packaging>
 
   <name>spring_test</name>
@@ -19,6 +22,15 @@
     <spring.boot.version>2.3.1.RELEASE</spring.boot.version>
     <mybatis-spring-boot-starter.version>2.1.3</mybatis-spring-boot-starter.version>
     <druid.version>1.1.9</druid.version>
+    <commons.lang.version>2.6</commons.lang.version>
+    <commons.io.version>2.5</commons.io.version>
+    <velocity.version>1.7</velocity.version>
+    <commons-lang3.version>3.7</commons-lang3.version>
+    <spring.test.version>5.2.7.RELEASE</spring.test.version>
+    <commons.lang.version>2.6</commons.lang.version>
+    <junit.version>4.12</junit.version>
+    <alibaba.fastjson.version>1.2.72</alibaba.fastjson.version>
+    <commons.configuration.version>1.8</commons.configuration.version>
   </properties>
 
   <dependencies>
@@ -45,7 +57,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
       <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
@@ -67,6 +78,46 @@
         <groupId>com.alibaba</groupId>
         <artifactId>druid-spring-boot-starter</artifactId>
         <version>${druid.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>${commons.lang.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons.io.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>velocity</artifactId>
+        <groupId>org.apache.velocity</groupId>
+        <version>${velocity.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.test.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons-lang3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>${alibaba.fastjson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-configuration</groupId>
+        <artifactId>commons-configuration</artifactId>
+        <version>${commons.configuration.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

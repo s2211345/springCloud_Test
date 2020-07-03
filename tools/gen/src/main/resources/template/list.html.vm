@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>${comments}列表</title>
+	<link rel="stylesheet" href="../../layui/css/layui.css" media="all">
+	<style>
+		body{margin: 10px;}
+		.demo-carousel{height: 200px; line-height: 200px; text-align: center;}
+	</style>
+</head>
+<body>
+<div class="xwcTableSearch">
+	姓名：
+	<div class="layui-inline">
+		<input class="layui-input" name="serchName" id="serchName" autocomplete="off">
+	</div>
+	<div class="layui-inline">
+		<button class="layui-btn" data-type="reload" id="searchBtn">搜索</button>
+	</div>
+	<div class="layui-layout-right">
+		<button class="layui-btn layui-btn-sm" onclick="location.href='add${className}.html'">
+			<i class="layui-icon">&#xe608;</i> 添加
+		</button>
+	</div>
+</div>
+
+<table id="xwcTable" lay-filter="xwcFilter"></table>
+
+<script type="text/html" id="xwcBar">
+	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+</script>
+
+</body>
+</html>
+
+<script  src="../../layui/layui.js"></script>
+<script type="text/javascript" src="../../js/libs/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="../../js/jq.js"></script>
+<script type="text/javascript" src="../../js/main.js"></script>
+<script type="text/javascript">
+
+	layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider'], function(){
+		var $= layui.jquery;
+		var laydate = layui.laydate //日期
+				,laypage = layui.laypage //分页
+				,layer = layui.layer //弹层
+				,table = layui.table //表格
+				,element = layui.element //元素操作
+				,form = layui.form       //form表单元素
+
+		//执行一个 table 实例
+		table.render({
+			elem: '#xwcTable'
+			,height: '700'
+			,id : 'tableAll'
+			,url: '/${pathName}/getList' //数据接口
+			,title: '${comments}列表'
+			,headers : {'token' : localStorage.getItem('token')}  //登录标识
+			,page: true //开启分页
+			,method: 'post'
+			,contentType: 'application/json'
+			,loading:true
+			,where : {                    //额外请求参数
+				serchName : ''
+			}
+			,limit: 10                  //每页展示条数初始值
+			,cols: [[ //表头
+			#foreach($column in $columns)
+				{field: '${column.attrname}', title: '$column.comments', width:150,totalRow: true},
+			#end
+				{fixed: 'right',title: '操作', width:100, align:'center', toolbar: '#xwcBar'}
+			]]
+		});
+
+		//搜索框点击操作
+		$('#searchBtn').on('click', function() {
+			tableReload();
+			return false;
+		});
+		//行工具栏监听事件
+		table.on('tool(xwcFilter)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+			var data = obj.data //获得当前行数据
+					,layEvent = obj.event; //获得 lay-event 对应的值
+			var id = data.id;
+			if(layEvent === 'detail'){
+				billDetail(id);
+			}
+		});
+
+		//家族详情
+		function billDetail(id){
+			var redirtUrl = './update${className}.html?id='+id;
+			window.location.href = redirtUrl;
+		}
+
+		//表格刷新
+		function tableReload(){
+			table.reload('tableAll', {
+				method : 'post',
+				where : {
+					serchName : $('#serchName').val()
+				}
+			});
+		}
+
+	});
+
+</script>
