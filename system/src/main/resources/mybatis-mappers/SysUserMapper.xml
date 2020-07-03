@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.test.system.dao.SysUserDao">
+
+
+    <resultMap type="com.test.system.model.SysUser" id="sysUserMap">
+        <result property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="password" column="password"/>
+        <result property="actualName" column="actual_name"/>
+        <result property="headImgUrl" column="head_img_url"/>
+        <result property="phone" column="phone"/>
+        <result property="telePhone" column="tele_phone"/>
+        <result property="eMail" column="e_mail"/>
+        <result property="birthday" column="birthday"/>
+        <result property="sex" column="sex"/>
+        <result property="age" column="age"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createUser" column="create_user"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+		u.id, 
+		u.user_name, 
+		u.password, 
+		u.actual_name, 
+		u.head_img_url, 
+		u.phone, 
+		u.tele_phone, 
+		u.e_mail, 
+		u.birthday, 
+		u.sex, 
+		u.age, 
+		u.status, 
+		u.create_time, 
+		u.update_time, 
+		u.create_user
+    </sql>
+
+	<sql id="where">
+				<if test="userName != null and userName != ''">AND u.`user_name` = #{userName}</if>
+				<if test="password != null and password != ''">AND u.`password` = #{password}</if>
+				<if test="actualName != null and actualName != ''">AND u.`actual_name` = #{actualName}</if>
+				<if test="headImgUrl != null and headImgUrl != ''">AND u.`head_img_url` = #{headImgUrl}</if>
+				<if test="phone != null and phone != ''">AND u.`phone` = #{phone}</if>
+				<if test="telePhone != null and telePhone != ''">AND u.`tele_phone` = #{telePhone}</if>
+				<if test="eMail != null and eMail != ''">AND u.`e_mail` = #{eMail}</if>
+				<if test="birthday != null">AND u.`birthday` = #{birthday}</if>
+				<if test="sex != null">AND u.`sex` = #{sex}</if>
+				<if test="age != null and age != ''">AND u.`age` = #{age}</if>
+				<if test="status != null and status != ''">AND u.`status` = #{status}</if>
+				<if test="createTime != null and createTime != ''">AND u.`create_time` = #{createTime}</if>
+				<if test="updateTime != null and updateTime != ''">AND u.`update_time` = #{updateTime}</if>
+				<if test="createUser != null and createUser != ''">AND u.`create_user` = #{createUser}</if>
+		</sql>
+
+	<select id="selectByPrimaryKey" resultType="com.xwckeji.framework.model.SysUser" resultMap="sysUserMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_user u
+		where u.id = #{value}
+	</select>
+
+	<select id="list" resultType="com.xwckeji.framework.model.SysUser" resultMap="sysUserMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_user u
+		<where>
+			<include refid="where" />
+		</where>
+      <choose>
+        <when test="sidx != null and sidx.trim() != ''">
+            order by ${sidx} ${order}
+        </when>
+				<otherwise>
+            order by u.createTime desc
+				</otherwise>
+      </choose>
+		<if test="offset != null and pageSize != null">
+			limit #{offset}, #{pageSize}
+		</if>
+	</select>
+
+	<select id="getList" resultType="com.xwckeji.framework.vo.resp.SysUserRespVO" parameterType="com.xwckeji.framework.vo.req.SysUserReqVO">
+		select
+		<include refid="Base_Column_List" />
+		from sys_user u
+		<where>
+			<include refid="where" />
+		</where>
+		<if test="page != null and page != null">
+			limit #{page},#{limit}
+		</if>
+	</select>
+
+  <select id="selectListByDto" resultType="com.xwckeji.framework.model.SysUser" resultMap="sysUserMap">
+      select
+      <include refid="Base_Column_List" />
+      from sys_user u
+		<where>
+			<include refid="where" />
+		</where>
+      order by createTime desc
+  </select>
+
+  <select id="selectDtoByDto" resultType="com.xwckeji.framework.model.SysUser" resultMap="sysUserMap">
+      select
+      <include refid="Base_Column_List" />
+      from sys_user u
+	  <where>
+		  <include refid="where" />
+	  </where>
+      LIMIT 1
+  </select>
+
+ 	<select id="count" resultType="int">
+		select count(*) from sys_user u
+		<where>
+			<include refid="where" />
+		</where>
+	</select>
+
+	<select id="getCount" resultType="int" parameterType="com.xwckeji.framework.vo.req.SysUserReqVO">
+		select count(*) from sys_user u
+		<where>
+			<include refid="where" />
+		</where>
+	</select>
+
+	<insert id="insertSelective" parameterType="com.xwckeji.framework.model.SysUser">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into sys_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				`id`,
+		  	</if>
+			<if test="userName != null">
+				`user_name`,
+		  	</if>
+			<if test="password != null">
+				`password`,
+		  	</if>
+			<if test="actualName != null">
+				`actual_name`,
+		  	</if>
+			<if test="headImgUrl != null">
+				`head_img_url`,
+		  	</if>
+			<if test="phone != null">
+				`phone`,
+		  	</if>
+			<if test="telePhone != null">
+				`tele_phone`,
+		  	</if>
+			<if test="eMail != null">
+				`e_mail`,
+		  	</if>
+			<if test="birthday != null">
+				`birthday`,
+		  	</if>
+			<if test="sex != null">
+				`sex`,
+		  	</if>
+			<if test="age != null">
+				`age`,
+		  	</if>
+			<if test="status != null">
+				`status`,
+		  	</if>
+			<if test="createTime != null">
+				`create_time`,
+		  	</if>
+			<if test="updateTime != null">
+				`update_time`,
+		  	</if>
+			<if test="createUser != null">
+				`create_user`,
+		  	</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="userName != null">
+				#{userName},
+			</if>
+			<if test="password != null">
+				#{password},
+			</if>
+			<if test="actualName != null">
+				#{actualName},
+			</if>
+			<if test="headImgUrl != null">
+				#{headImgUrl},
+			</if>
+			<if test="phone != null">
+				#{phone},
+			</if>
+			<if test="telePhone != null">
+				#{telePhone},
+			</if>
+			<if test="eMail != null">
+				#{eMail},
+			</if>
+			<if test="birthday != null">
+				#{birthday},
+			</if>
+			<if test="sex != null">
+				#{sex},
+			</if>
+			<if test="age != null">
+				#{age},
+			</if>
+			<if test="status != null">
+				#{status},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="createUser != null">
+				#{createUser},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="insertBatch" parameterType="com.xwckeji.framework.model.SysUser">
+		insert into sys_user
+		(
+			`id`, 
+			`user_name`, 
+			`password`, 
+			`actual_name`, 
+			`head_img_url`, 
+			`phone`, 
+			`tele_phone`, 
+			`e_mail`, 
+			`birthday`, 
+			`sex`, 
+			`age`, 
+			`status`, 
+			`create_time`, 
+			`update_time`, 
+			`create_user`
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			#{item.id}, 
+			#{item.userName}, 
+			#{item.password}, 
+			#{item.actualName}, 
+			#{item.headImgUrl}, 
+			#{item.phone}, 
+			#{item.telePhone}, 
+			#{item.eMail}, 
+			#{item.birthday}, 
+			#{item.sex}, 
+			#{item.age}, 
+			#{item.status}, 
+			#{item.createTime}, 
+			#{item.updateTime}, 
+			#{item.createUser}
+			)
+		</foreach>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.xwckeji.framework.model.SysUser">
+		update sys_user
+		<set>
+			<if test="userName != null">`user_name` = #{userName}, </if>
+			<if test="password != null">`password` = #{password}, </if>
+			<if test="actualName != null">`actual_name` = #{actualName}, </if>
+			<if test="headImgUrl != null">`head_img_url` = #{headImgUrl}, </if>
+			<if test="phone != null">`phone` = #{phone}, </if>
+			<if test="telePhone != null">`tele_phone` = #{telePhone}, </if>
+			<if test="eMail != null">`e_mail` = #{eMail}, </if>
+			<if test="birthday != null">`birthday` = #{birthday}, </if>
+			<if test="sex != null">`sex` = #{sex}, </if>
+			<if test="age != null">`age` = #{age}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="createUser != null">`create_user` = #{createUser}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<delete id="deleteByPrimaryKey">
+		delete from sys_user where id = #{value}
+	</delete>
+
+	<delete id="deleteBatchByPrimaryKey">
+		delete from sys_user where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

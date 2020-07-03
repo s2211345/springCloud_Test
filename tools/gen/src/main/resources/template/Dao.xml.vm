@@ -13,14 +13,13 @@
     <sql id="Base_Column_List" >
 #foreach($column in $columns)
 		${alias}.${column.columnName}#if($velocityCount != $columns.size()), #end
-
 #end
     </sql>
 
 	<sql id="where">
 		#foreach($column in $columns)
 		#if($column.columnName != $pk.columnName)
-					<if test="$column.attrname != null#if($column.dataType == 'varchar' || $column.dataType == 'datetime' || $column.dataType == 'int') and $column.attrname != ''#end">AND ${alias}.`$column.columnName` = #{$column.attrname}</if>
+			<if test="$column.attrname != null#if($column.dataType == 'varchar' || $column.dataType == 'datetime' || $column.dataType == 'int') and $column.attrname != ''#end">AND ${alias}.`$column.columnName` = #{$column.attrname}</if>
 		#end
 		#end
 	</sql>

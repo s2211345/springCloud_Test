@@ -23,11 +23,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/level1/**").authenticated()
-                .antMatchers("/level2/**").authenticated()
-                .antMatchers("/level3/**").authenticated()
-                .antMatchers("/").permitAll();
+        http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/*").permitAll();
 
         /*开启自动配置的登录功能,如果是自己的定制的登入页面，那么/userlogin 的get请求是来到登录页面，/userlogin的post请求是处理认证登录
         也就是loginPage中的URL的post请求是处理登录逻辑的。没登录的时候，访问会以get的方式访问loginpage的URL来到登录页面*/

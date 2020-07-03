@@ -31,6 +31,8 @@
     <junit.version>4.12</junit.version>
     <alibaba.fastjson.version>1.2.72</alibaba.fastjson.version>
     <commons.configuration.version>1.8</commons.configuration.version>
+    <mybatis.plus.version>3.3.2</mybatis.plus.version>
+    <jjwt.version>0.9.1</jjwt.version>
   </properties>
 
   <dependencies>
@@ -118,6 +120,16 @@
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
         <version>${commons.configuration.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-boot-starter</artifactId>
+        <version>${mybatis.plus.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt</artifactId>
+        <version>${jjwt.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
