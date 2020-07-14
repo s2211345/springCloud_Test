@@ -18,7 +18,7 @@ import java.util.List;
  * @date 2020-07-03 11:03:03
  */
 @Data
-public class SysUser extends BaseModel implements UserDetails {
+public class SysUser extends BaseModel{
 	// 用户名
 	private String userName;
 	// 密码
@@ -41,36 +41,4 @@ public class SysUser extends BaseModel implements UserDetails {
 	private Integer age;
 	// 创建用户
 	private String createUser;
-
-	private List<GrantedAuthority> authoritys;
-
-	@Override
-	public String getUsername() {
-		return userName;
-	}
-
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.authoritys;
-	}
 }

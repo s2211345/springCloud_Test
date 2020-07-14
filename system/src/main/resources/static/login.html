@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<meta http-equiv="Expires" content="0">
+	<title>登录</title>
+	<link href="/statics/css/login.css" type="text/css" rel="stylesheet">
+</head>
+<style>
+	.login-form {
+		width: 292px;
+		height: 290px;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		margin: -124px 0 0 -146px;
+		background: #fff
+	}
+
+	.login-title {
+		padding: 10px 20px 10px 20px;
+		color: #727272;
+		font-size: 16px;
+		border-bottom: 1px solid #eaeaea;
+	}
+	.form-box{
+		margin:20px
+	}
+	.form-box>div{
+		height:30px;
+		border:1px solid #cdcdcd;
+		margin-bottom: 20px;
+		position: relative;
+	}
+	.userinfo-logo{
+		padding:5px;
+		vertical-align: middle;
+	}
+	.userinfo-close{
+		padding:9px;
+		vertical-align: middle;
+		position: absolute;
+		right: 0;
+		top:0;
+		display: none;
+	}
+	.verifyCode{
+		padding:9px;
+		vertical-align: middle;
+		display: inline;
+	 }
+	.verifyCodeInput{
+		width: 120px;
+		border: 1px solid #cdcdcd;
+	}
+	input{
+		border:none;
+		height:28px;
+		border-left:1px solid #cdcdcd;
+		outline: none;
+		padding-left:10px;
+	}
+	button{
+		height:36px;
+		line-height: 36px;
+		text-align: center;
+		background: #ff6800;
+		color:#fff;
+		border-width: 0px;
+		border-style: none;
+		border-color:#fff;
+		border-image: none;
+		cursor: pointer;
+		align-items:center;
+		border:none;
+		margin-top:10px
+	}
+</style>
+
+<body>
+	<div class='login-form'>
+		<div class='login-title'>登录</div>
+		<form id="login-form" method="post" onsubmit="return false;">
+			<div class='form-box'>
+				<div>
+					<img src='/statics/img/login/user.png' class='userinfo-logo'>
+					<input id="username" name="username" placeholder="输入账号" type="text" autocomplete="off">
+					<img src='/statics/img/login/close.png' class='userinfo-close username'>
+				</div>
+				<div>
+					<img src='/statics/img/login/password.png'  class='userinfo-logo'>
+					<input id="password" name="password" placeholder="输入密码" type="password" autocomplete="off">
+					<img src='/statics/img/login/close.png' class='userinfo-close password'>
+				</div>
+				<div style="border: none;">
+					<input id="code" name="code" class="verifyCodeInput" placeholder="输入验证码" type="text" autocomplete="off">
+					<img id="verifyCodeImg" src="/admin/verifyCode/vercode" onclick="flushVerifyCode()" class="verifyCode" alt="">
+				</div>
+				<button style="width: 100%;" type="submit" onclick="login(this)">登录</button>
+				<hr class="hr20">
+				<span id="info" style="color: red"></span>
+			</div>
+		</form>
+	</div>
+
+</body>
+<script src="/statics/js/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript">
+	if (top != self) {
+		parent.location.href = '/login.html';
+	}
+	$(document).on('input porpertychange','#username,#password',function(){
+		let _this = $(this);
+		if(_this.val()){
+			_this.siblings('.userinfo-close').show();
+		}else{
+			_this.siblings('.userinfo-close').hide();
+		}
+	})
+	$(document).on('click','.userinfo-close',function(){
+		$(this).hide().siblings('input').val('');
+	})
+	var token = localStorage.getItem("token");
+	if (token != null && token.trim().length != 0) {
+		$.ajax({
+			type: 'get',
+			url: '/users/current?token=' + token,
+			success: function (data) {
+				location.href = '/index.html';
+			},
+			error: function (xhr, textStatus, errorThrown) {
+				var msg = xhr.responseText;
+				var response = JSON.parse(msg);
+				var code = response.code;
+				var message = response.message;
+				if (code == 401) {
+					localStorage.removeItem("token");
+				}
+			}
+		});
+	}
+
+	function login(obj) {
+		$(obj).attr("disabled", true);
+
+		var username = $.trim($('#username').val());
+		var password = $.trim($('#password').val());
+		if (username == "" || password == "") {
+			$("#info").html('用户名或者密码不能为空');
+			$(obj).attr("disabled", false);
+		} else {
+			$.ajax({
+				type: 'post',
+				url: '/admin/sysUser/doLogin',
+				data: $("#login-form").serialize(),
+				success: function (data) {
+					console.log("进入成功");
+					console.log(data);
+					localStorage.setItem("token", data.token);
+					location.href = '/index.html';
+				},
+				error: function (xhr, textStatus, errorThrown) {
+					console.log("进入失败");
+					$("#info").html(xhr.responseText);
+					$(obj).attr("disabled", false);
+				}
+			});
+
+		}
+	}
+
+	function flushVerifyCode() {
+		$("#verifyCodeImg").attr("src",'/admin/verifyCode/vercode?random='+new Date().getMilliseconds());
+	}
+</script>
+
+</html>
