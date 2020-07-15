@@ -1,9 +1,8 @@
 package ${package}.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
-import java.math.BigDecimal;
+import ${package}.view.base.request.BaseRequestView;
 
 #if(${hasBigDecimal})
 import java.math.BigDecimal;
@@ -21,8 +20,9 @@ import com.open.capacity.utils.DateUtils;
  * @date ${datetime}
  */
 @Data
-public class ${className}ReqVO {
-	
+public class ${className}ReqVO extends BaseRequestView{
+	private static final long serialVersionUID = 1L;
+
 #foreach ($column in $columns)
 	// $column.comments
 #if($column.hasDate)

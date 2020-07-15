@@ -5,19 +5,24 @@ import com.lwc.test.model.sys.SysUser;
 import com.lwc.test.service.sys.SysUserService;
 import com.lwc.test.service.base.impl.BaseServiceImpl;
 import com.lwc.test.dao.sys.SysUserDao;
+import com.lwc.test.view.sys.request.SysUserReqVO;
+import com.lwc.test.view.sys.response.SysUserRespVO;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
 @Service
-public class SysUserServiceImpl extends BaseServiceImpl<SysUser> implements SysUserService {
-    @Autowired
-    private SysUserDao sysUserDao;
+@Slf4j
+public class SysUserServiceImpl extends BaseServiceImpl<SysUser, SysUserReqVO, SysUserRespVO> implements SysUserService {
+    private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
 
     @Override
     @Resource(name = "sysUserDao")
-    public void setBaseDao(BaseDao<SysUser> baseDao) {
+    public void setBaseDao(BaseDao<SysUser,SysUserReqVO, SysUserRespVO> baseDao) {
         super.setBaseDao(baseDao);
     }
 }

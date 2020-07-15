@@ -150,7 +150,10 @@ public class GenUtils {
 		map.put("author", config.getString("author"));
 		map.put("module", config.getString("module"));
 		map.put("email", config.getString("email"));
+		map.put("project", config.getString("project"));
 		map.put("baseDao", config.getString("baseDao"));
+		map.put("req", config.getString("req"));
+		map.put("resp", config.getString("resp"));
 		map.put("utils", config.getString("utils"));
 		map.put("datetime", DateUtils.format(new Date(), DateUtils.DATE_TIME_PATTERN));
         VelocityContext context = new VelocityContext(map);

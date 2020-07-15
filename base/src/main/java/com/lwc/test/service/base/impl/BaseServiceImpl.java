@@ -3,18 +3,20 @@ package com.lwc.test.service.base.impl;
 import com.lwc.test.dao.base.BaseDao;
 import com.lwc.test.model.base.BaseModel;
 import com.lwc.test.service.base.BaseService;
+import com.lwc.test.view.base.request.BaseRequestView;
+import com.lwc.test.view.base.response.BaseResponseView;
 
 import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class BaseServiceImpl<T extends BaseModel> implements BaseService<T> {
+public class BaseServiceImpl<T extends BaseModel,REQ extends BaseRequestView,RESP extends BaseResponseView> implements BaseService<T,REQ,RESP> {
 
-    BaseDao<T> dao;
-    //通过重写该方法注入BaseDao
+    public BaseDao<T,REQ,RESP> dao;
+    // 注入Dao
     // @Resource("XXDao")
-    public void setBaseDao(BaseDao<T> baseDao) {
+    public void setBaseDao(BaseDao<T,REQ,RESP> baseDao) {
         this.dao = baseDao;
     }
 
@@ -56,25 +58,16 @@ public class BaseServiceImpl<T extends BaseModel> implements BaseService<T> {
 
     //分页查询
     @Override
-    public int countByReq(T dto) {
+    public int countByReq(REQ dto) {
         return dao.countByReq(dto);
     }
     @Override
-    public List<T> listByReq(T dto) {
+    public List<RESP> listByReq(REQ dto) {
         return dao.listByReq(dto);
     }
     //查询
     @Override
-    public T queryByReq(T record) {
+    public RESP queryByReq(REQ record) {
         return dao.queryByReq(record);
-    }
-    @Override
-    public List<T> queryListByReq(T record) {
-        return dao.queryListByReq(record);
-    }
-
-    @Override
-    public int countListByReq(T dto) {
-        return dao.countListByReq(dto);
     }
 }

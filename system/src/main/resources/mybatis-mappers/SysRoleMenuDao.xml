@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lwc.test.dao.sys.SysRoleMenuDao">
+
+
+    <resultMap type="com.lwc.test.model.sys.SysRoleMenu" id="sysRoleMenuMap">
+        <result property="roleId" column="role_id"/>
+        <result property="menu" column="menu"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+		rm.role_id,
+		rm.menu    </sql>
+
+	<sql id="where">
+		<if test="menu != null and menu != ''">AND rm.`menu` = #{menu}</if>
+	</sql>
+
+	<select id="queryById" resultType="com.lwc.test.model.sys.SysRoleMenu" resultMap="sysRoleMenuMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_role_menu rm
+		where rm.role_id = #{value}
+	</select>
+
+	<select id="queryByReq" resultType="com.lwc.test.model.sys.SysRoleMenu" resultMap="sysRoleMenuMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_role_menu rm
+		<where>
+			<include refid="where" />
+		</where>
+		limit 1
+	</select>
+
+	<select id="listByReq" resultType="com.lwc.test.view.sys.response.SysRoleMenuRespVO" parameterType="com.lwc.test.view.sys.request.SysRoleMenuReqVO">
+		select
+		<include refid="Base_Column_List" />
+		from sys_role_menu rm
+		<where>
+			<include refid="where" />
+		</where>
+      <choose>
+        <when test="sidx != null and sidx.trim() != ''">
+            order by ${sidx} ${order}
+        </when>
+				<otherwise>
+            order by rm.createTime desc
+				</otherwise>
+      </choose>
+		<if test="page != null and page != null">
+			limit #{page}, #{limit}
+		</if>
+	</select>
+
+ 	<select id="countByReq" resultType="int">
+		select count(*) from sys_role_menu rm
+		<where>
+			<include refid="where" />
+		</where>
+	</select>
+
+	<insert id="save" parameterType="com.lwc.test.model.sys.SysRoleMenu">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into sys_role_menu
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				`role_id`,
+		  	</if>
+			<if test="menu != null">
+				`menu`,
+		  	</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				#{roleId},
+			</if>
+			<if test="menu != null">
+				#{menu},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="batchSave" parameterType="com.lwc.test.model.sys.SysRoleMenu">
+		insert into sys_role_menu
+		(
+			`role_id`, 
+			`menu`
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			#{item.roleId}, 
+			#{item.menu}
+			)
+		</foreach>
+	</insert>
+
+	<update id="update" parameterType="com.lwc.test.model.sys.SysRoleMenu">
+		update sys_role_menu
+		<set>
+			<if test="menu != null">`menu` = #{menu}</if>
+		</set>
+		where role_id = #{roleId}
+	</update>
+
+	<delete id="delete">
+		delete from sys_role_menu where role_id = #{value}
+	</delete>
+
+	<delete id="batchDelete">
+		delete from sys_role_menu where role_id in
+		<foreach item="roleId" collection="array" open="(" separator="," close=")">
+			#{roleId}
+		</foreach>
+	</delete>
+
+</mapper>

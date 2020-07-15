@@ -1,5 +1,6 @@
 package com.lwc.test.view.sys.response;
 
+import com.lwc.test.enums.base.BaseStatusCodeEnum;
 import com.lwc.test.model.base.BaseModel;
 import com.lwc.test.view.base.response.BaseResponseView;
 import lombok.Data;
@@ -20,6 +21,7 @@ import java.util.List;
  */
 @Data
 public class SysUserRespVO extends BaseResponseView implements UserDetails {
+	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	// 用户名
@@ -51,7 +53,14 @@ public class SysUserRespVO extends BaseResponseView implements UserDetails {
 	// 创建用户
 	private String createUser;
 
+	private String token;
+	/** 登陆时间戳（毫秒） */
+	private Long loginTime;
+	/** 过期时间戳 */
+	private Long expireTime;
 	private List<GrantedAuthority> authoritys;
+
+
 
 	@Override
 	public String getUsername() {
@@ -65,7 +74,7 @@ public class SysUserRespVO extends BaseResponseView implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return true;
+		return ! BaseStatusCodeEnum.DISABLE.getCode().equals(getStatus());
 	}
 
 	@Override

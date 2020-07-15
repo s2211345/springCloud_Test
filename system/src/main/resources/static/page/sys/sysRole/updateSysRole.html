@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>更新角色表</title>
+	<link rel="stylesheet" href="/statics/js/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="/statics/css/element/index.css">
+</head>
+<body>
+<style>
+	.firstDiv{
+		margin-top: 20px;
+	}
+</style>
+<div id="app">
+	<el-form ref="form" :model="form"
+			 label-width="220px"
+			 label-position="left"
+			 id="file_form"
+			 :rules="rules">
+														<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="角色名称：" span="12" prop="name">
+							<el-input v-model="form.name" name="name"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="描述：" span="12" prop="description">
+							<el-input v-model="form.description" name="description"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="创建时间：" span="12" prop="createTime">
+							<el-input v-model="form.createTime" name="createTime"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="更新时间：" span="12" prop="updateTime">
+							<el-input v-model="form.updateTime" name="updateTime"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+					
+	</el-form>
+</div>
+</body>
+<script type="text/javascript" src="/statics/js/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="/statics/layui/layui.js"></script>
+<script type="text/javascript" src="/statics/js/vue/vue_v2.6.11.js"></script>
+<script src="/statics/js/element/index.js"></script>
+<script type="text/javascript" src="/statics/js/layerView.js"></script>
+<script type="text/javascript">
+	var app = new Vue({
+		el: '#app',
+		data: {
+			form:{
+					id:'',
+					name:'',
+					description:'',
+					createTime:'',
+					updateTime:'',
+			},
+	token:{},
+	rules:{
+					id:{required: true, message: '请输入', trigger: 'blur'},
+					name:{required: true, message: '请输入角色名称', trigger: 'blur'},
+					description:{required: true, message: '请输入描述', trigger: 'blur'},
+					createTime:{required: true, message: '请输入创建时间', trigger: 'blur'},
+					updateTime:{required: true, message: '请输入更新时间', trigger: 'blur'},
+			}
+	},
+	beforeCreate: function(){
+		console.log("页面加载前执行");
+	},
+	mounted: function() {
+		var vm = this;
+		vm.token = {
+			token : localStorage.getItem("token")
+		}
+		//加载数据
+		vm.initData();
+	},
+	methods: {
+		valudatorForm(){
+			let bl = true;
+																								return bl;
+		},
+		valudatorDataMsg() {
+			this.$message.error('请见数据填写完整');
+		},
+		initData: function() {
+			var vm = this;
+			var id = vm.getUrlParam("id");
+			if(id == undefined || id == null || id == ""){
+				return;
+			}
+			$.ajax({
+				type : 'get',
+				url : '/sysrole/' + id,
+				contentType: "application/json; charset=utf-8",
+				headers: vm.token,
+				async : false,
+				success : function(data) {
+					if(data.code == '200'){
+						vm.form = data.data;
+					}
+				}
+			});
+		},
+		getUrlParam : function (name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return unescape(r[2]); return null;
+		}
+	}
+	});
+
+</script>
+</html>

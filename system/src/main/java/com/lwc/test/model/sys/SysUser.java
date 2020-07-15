@@ -19,6 +19,7 @@ import java.util.List;
  */
 @Data
 public class SysUser extends BaseModel{
+	private static final long serialVersionUID = 1L;
 	// 用户名
 	private String userName;
 	// 密码

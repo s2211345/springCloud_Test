@@ -24,7 +24,7 @@ public class GenLocalUtils {
     @Test
     public void generatorCode(){
 //        generatorService.generatorCode(new String[]{"bx_loan", "bx_loan_area", "bx_loan_case", "bx_loan_contacts", "bx_loan_crowd", "bx_loan_evaluate", "bx_loan_handling", "bx_loan_otherfee", "bx_loan_purpose"}, 0);
-        generatorService.generatorCode(new String[]{"sys_user"}, 0);
+        generatorService.generatorCode(new String[]{"sys_user_role"}, 0);
     }
 }
 

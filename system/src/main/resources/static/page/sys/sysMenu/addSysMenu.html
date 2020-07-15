@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>新增菜单表</title>
+	<link rel="stylesheet" href="/statics/js/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="/statics/css/element/index.css">
+</head>
+<body>
+<style>
+	.firstDiv{
+		margin-top: 20px;
+	}
+</style>
+<div id="app">
+	<el-form ref="form" :model="form"
+			 label-width="220px"
+			 label-position="left"
+			 id="file_form"
+			 :rules="rules">
+														<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="父id：" span="12" prop="parentId">
+							<el-input v-model="form.parentId" name="parentId"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="名称：" span="12" prop="name">
+							<el-input v-model="form.name" name="name"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="图标：" span="12" prop="ico">
+							<el-input v-model="form.ico" name="ico"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="链接：" span="12" prop="href">
+							<el-input v-model="form.href" name="href"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="类型 1 菜单 2按钮：" span="12" prop="type">
+							<el-input v-model="form.type" name="type"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="权限：" span="12" prop="permission">
+							<el-input v-model="form.permission" name="permission"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="排序：" span="12" prop="sort">
+							<el-input v-model="form.sort" name="sort"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="创建时间：" span="12" prop="createTime">
+							<el-input v-model="form.createTime" name="createTime"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="更新时间：" span="12" prop="updateTime">
+							<el-input v-model="form.updateTime" name="updateTime"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+												<el-row :gutter="20" class="firstDiv">
+					<el-col :span="15" :push="1">
+						<el-form-item label="创建用户：" span="12" prop="createUser">
+							<el-input v-model="form.createUser" name="createUser"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+					
+	</el-form>
+</div>
+</body>
+<script type="text/javascript" src="/statics/js/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="/statics/layui/layui.js"></script>
+<script type="text/javascript" src="/statics/js/vue/vue_v2.6.11.js"></script>
+<script src="/statics/js/element/index.js"></script>
+<script type="text/javascript" src="/statics/js/layerView.js"></script>
+<script type="text/javascript">
+	var app = new Vue({
+		el: '#app',
+		data: {
+			form:{
+					id:'',
+					parentId:'',
+					name:'',
+					ico:'',
+					href:'',
+					type:'',
+					permission:'',
+					sort:'',
+					createTime:'',
+					updateTime:'',
+					createUser:'',
+			},
+	token:{},
+	rules:{
+					id:{required: true, message: '请输入', trigger: 'blur'},
+					parentId:{required: true, message: '请输入父id', trigger: 'blur'},
+					name:{required: true, message: '请输入名称', trigger: 'blur'},
+					ico:{required: true, message: '请输入图标', trigger: 'blur'},
+					href:{required: true, message: '请输入链接', trigger: 'blur'},
+					type:{required: true, message: '请输入类型 1 菜单 2按钮', trigger: 'blur'},
+					permission:{required: true, message: '请输入权限', trigger: 'blur'},
+					sort:{required: true, message: '请输入排序', trigger: 'blur'},
+					createTime:{required: true, message: '请输入创建时间', trigger: 'blur'},
+					updateTime:{required: true, message: '请输入更新时间', trigger: 'blur'},
+					createUser:{required: true, message: '请输入创建用户', trigger: 'blur'},
+			}
+	},
+	beforeCreate: function(){
+		console.log("页面加载前执行");
+	},
+	mounted: function() {
+		var vm = this;
+		vm.token = {
+			token : localStorage.getItem("token")
+		}
+	},
+	methods: {
+		valudatorForm(){
+			let bl = true;
+																								return bl;
+		},
+		valudatorDataMsg() {
+			this.$message.error('请见数据填写完整');
+		},
+		getUrlParam : function (name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return unescape(r[2]); return null;
+		}
+	}
+	});
+
+
+</script>
+</html>

@@ -1,11 +1,13 @@
 package com.lwc.test.service.base;
 
 import com.lwc.test.model.base.BaseModel;
+import com.lwc.test.view.base.request.BaseRequestView;
+import com.lwc.test.view.base.response.BaseResponseView;
 
 import java.util.List;
 import java.util.Map;
 
-public interface BaseService<T extends BaseModel> {
+public interface BaseService<T extends BaseModel,REQ extends BaseRequestView,RESP extends BaseResponseView> {
     //增删改查
     int save(T record);
     T queryById(Integer id);
@@ -16,11 +18,9 @@ public interface BaseService<T extends BaseModel> {
     int batchDelete(List<Integer> ids);
 
     //分页查询
-    int countByReq(T dto);
-    List<T> listByReq(T dto);
+    int countByReq(REQ dto);
+    List<RESP> listByReq(REQ dto);
 
     //查询
-    T queryByReq(T record);
-    List<T> queryListByReq(T record);
-    int countListByReq(T dto);
+    RESP queryByReq(REQ record);
 }

@@ -1,13 +1,9 @@
 package ${package}.service;
 
-import ${package}.model.${className};
-import ${package}.dto.PageDTO;
-import ${package}.service.base.IService;
-import ${package}.vo.req.${className}ReqVO;
-import ${package}.vo.resp.${className}RespVO;
-
-import java.util.List;
-import java.util.Map;
+import ${package}.model.${project}.${className};
+import ${package}.service.base.BaseService;
+import ${req}.${className}ReqVO;
+import ${resp}.${className}RespVO;
 
 /**
  * ${comments}
@@ -16,10 +12,5 @@ import java.util.Map;
  * @email ${email}
  * @date ${datetime}
  */
-public interface ${className}Service extends IService<${className}>{
-    PageDTO<List<${className}RespVO>> getList(${className}ReqVO reqVO);
-
-    int getCount(${className}ReqVO reqVO);
-
-    int delete(Long id);
+public interface ${className}Service extends BaseService<${className},${className}ReqVO,${className}RespVO>{
 }

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lwc.test.dao.sys.SysRoleDao">
+
+
+    <resultMap type="com.lwc.test.model.sys.SysRole" id="sysRoleMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+		r.id,
+		r.name,
+		r.description,
+		r.create_time,
+		r.update_time    </sql>
+
+	<sql id="where">
+		<if test="name != null and name != ''">AND r.`name` = #{name}</if>
+		<if test="description != null and description != ''">AND r.`description` = #{description}</if>
+		<if test="createTime != null and createTime != ''">AND r.`create_time` = #{createTime}</if>
+		<if test="updateTime != null and updateTime != ''">AND r.`update_time` = #{updateTime}</if>
+	</sql>
+
+	<select id="queryById" resultType="com.lwc.test.model.sys.SysRole" resultMap="sysRoleMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_role r
+		where r.id = #{value}
+	</select>
+
+	<select id="queryByReq" resultType="com.lwc.test.model.sys.SysRole" resultMap="sysRoleMap">
+		select
+		<include refid="Base_Column_List" />
+		from sys_role r
+		<where>
+			<include refid="where" />
+		</where>
+		limit 1
+	</select>
+
+	<select id="listByReq" resultType="com.lwc.test.view.sys.response.SysRoleRespVO" parameterType="com.lwc.test.view.sys.request.SysRoleReqVO">
+		select
+		<include refid="Base_Column_List" />
+		from sys_role r
+		<where>
+			<include refid="where" />
+		</where>
+      <choose>
+        <when test="sidx != null and sidx.trim() != ''">
+            order by ${sidx} ${order}
+        </when>
+				<otherwise>
+            order by r.createTime desc
+				</otherwise>
+      </choose>
+		<if test="page != null and page != null">
+			limit #{page}, #{limit}
+		</if>
+	</select>
+
+ 	<select id="countByReq" resultType="int">
+		select count(*) from sys_role r
+		<where>
+			<include refid="where" />
+		</where>
+	</select>
+
+	<insert id="save" parameterType="com.lwc.test.model.sys.SysRole">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into sys_role
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				`id`,
+		  	</if>
+			<if test="name != null">
+				`name`,
+		  	</if>
+			<if test="description != null">
+				`description`,
+		  	</if>
+			<if test="createTime != null">
+				`create_time`,
+		  	</if>
+			<if test="updateTime != null">
+				`update_time`,
+		  	</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="name != null">
+				#{name},
+			</if>
+			<if test="description != null">
+				#{description},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="batchSave" parameterType="com.lwc.test.model.sys.SysRole">
+		insert into sys_role
+		(
+			`id`, 
+			`name`, 
+			`description`, 
+			`create_time`, 
+			`update_time`
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			#{item.id}, 
+			#{item.name}, 
+			#{item.description}, 
+			#{item.createTime}, 
+			#{item.updateTime}
+			)
+		</foreach>
+	</insert>
+
+	<update id="update" parameterType="com.lwc.test.model.sys.SysRole">
+		update sys_role
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="description != null">`description` = #{description}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<delete id="delete">
+		delete from sys_role where id = #{value}
+	</delete>
+
+	<delete id="batchDelete">
+		delete from sys_role where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

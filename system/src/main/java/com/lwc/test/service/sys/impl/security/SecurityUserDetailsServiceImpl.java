@@ -1,11 +1,9 @@
 package com.lwc.test.service.sys.impl.security;
 
-import com.lwc.test.controller.sys.LoginUser;
-import com.lwc.test.dao.sys.SysUserDao;
 import com.lwc.test.enums.base.BaseStatusCodeEnum;
-import com.lwc.test.model.sys.SysUser;
 import com.lwc.test.service.sys.SysUserService;
-import com.lwc.test.utils.ReflectUtils;
+import com.lwc.test.view.sys.request.SysUserReqVO;
+import com.lwc.test.view.sys.response.SysUserRespVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -18,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.beans.IntrospectionException;
-import java.lang.reflect.InvocationTargetException;
 
 @Service
 public class SecurityUserDetailsServiceImpl implements UserDetailsService {
@@ -39,16 +35,16 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // 验证码验证
         String requestCaptcha = request.getParameter("code");
-        String genCaptcha = (String) request.getSession().getAttribute("index_code");
+        String genCaptcha = (String) request.getSession().getAttribute("index_login_code");
         if (StringUtils.isEmpty(requestCaptcha)) {
             throw new AuthenticationServiceException("验证码不能为空!");
         }
         if (!genCaptcha.toLowerCase().equals(requestCaptcha.toLowerCase())) {
             throw new AuthenticationServiceException("验证码错误!");
         }
-        SysUser queryParam = new SysUser();
+        SysUserReqVO queryParam = new SysUserReqVO();
         queryParam.setUserName(username);
-        SysUser user = sysUserService.queryByReq(queryParam);
+        SysUserRespVO user = sysUserService.queryByReq(queryParam);
         if (user == null) {
             throw new AuthenticationCredentialsNotFoundException("用户名不存在");
         } else if (BaseStatusCodeEnum.DISABLE.getCode().equals(user.getStatus())) {
@@ -56,12 +52,6 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
         } else if (BaseStatusCodeEnum.DELETE.getCode().equals(user.getStatus())) {
             throw new DisabledException("用户已作废");
         }
-        LoginUser loginUser = new LoginUser();
-        try {
-            ReflectUtils.copySameFieldToTargetFilterNull(user,loginUser);
-        } catch (IllegalAccessException | IntrospectionException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return loginUser;
+        return user;
     }
 }

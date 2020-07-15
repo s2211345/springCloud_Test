@@ -1,10 +1,9 @@
 package com.lwc.test.config.sys;
 
-import com.lwc.test.controller.sys.LoginUser;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
+import com.lwc.test.view.sys.response.SysUserRespVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -16,7 +15,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import javax.servlet.ServletException;
@@ -55,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .successHandler(new AuthenticationSuccessHandler() {
                     @Override
                     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
-                        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+                        SysUserRespVO user = (SysUserRespVO) authentication.getPrincipal();
 
                         /*Token token = tokenService.saveToken(loginUser);
                         ResponseUtil.responseJson(response, HttpStatus.OK.value(), token);*/

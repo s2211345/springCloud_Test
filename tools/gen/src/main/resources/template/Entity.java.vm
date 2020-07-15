@@ -1,9 +1,8 @@
 package ${package}.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
-import java.math.BigDecimal;
+import ${package}.model.base.BaseModel;
 
 #if(${hasBigDecimal})
 import java.math.BigDecimal;
@@ -21,7 +20,7 @@ import com.open.capacity.utils.DateUtils;
  * @date ${datetime}
  */
 @Data
-public class ${className} implements Serializable {
+public class ${className}  extends BaseModel {
 	private static final long serialVersionUID = 1L;
 	
 #foreach ($column in $columns)

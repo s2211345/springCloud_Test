@@ -10,7 +10,6 @@ import java.util.Date;
  */
 @Data
 public class BaseModel implements Serializable {
-    private static final long serialVersionUID = 1L;
     private Integer id;
     // 状态 -1 禁用 1正常 -2 删除
     private Integer status;

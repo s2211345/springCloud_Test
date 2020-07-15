@@ -74,26 +74,6 @@
 		limit 1
 	</select>
 
-	<select id="queryListByReq" resultType="com.lwc.test.model.sys.SysUser" resultMap="sysUserMap">
-		select
-		<include refid="Base_Column_List" />
-		from sys_user u
-		<where>
-			<include refid="where" />
-		</where>
-      <choose>
-        <when test="orderField != null and orderField.trim() != ''">
-            order by ${orderField} ${order}
-        </when>
-				<otherwise>
-            order by u.createTime desc
-				</otherwise>
-      </choose>
-		<if test="offset != null and pageSize != null">
-			limit #{offset}, #{pageSize}
-		</if>
-	</select>
-
 	<select id="listByReq" resultType="com.lwc.test.view.sys.response.SysUserRespVO" parameterType="com.lwc.test.view.sys.request.SysUserReqVO">
 		select
 		<include refid="Base_Column_List" />
@@ -107,13 +87,6 @@
 	</select>
 
  	<select id="countByReq" resultType="int">
-		select count(*) from sys_user u
-		<where>
-			<include refid="where" />
-		</where>
-	</select>
-
-	<select id="countListByReq" resultType="int" parameterType="com.lwc.test.view.sys.request.SysUserReqVO">
 		select count(*) from sys_user u
 		<where>
 			<include refid="where" />
