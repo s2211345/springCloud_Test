@@ -1,9 +1,11 @@
 package com.lwc.test.config.sys;
 
+import com.lwc.test.filter.sys.LindTokenAuthenticationFilter;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
 import com.lwc.test.view.sys.response.SysUserRespVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -15,6 +17,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import javax.servlet.ServletException;
@@ -27,6 +30,9 @@ import java.io.PrintWriter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
     @Autowired
     private SecurityUserDetailsServiceImpl securityUserDetailsService;
+    @Autowired
+    private LindTokenAuthenticationFilter lindTokenAuthenticationFilter;
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -61,8 +67,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                         resp.setHeader("Access-Control-Allow-Methods", "*");
                         resp.setContentType("application/json;charset=UTF-8");
                         resp.setStatus(200);
-
-//                        resp.getWriter().write(JSONObject.toJSONString(data));
+                        String token = securityUserDetailsService.getAndSaveToken(user);
+                        resp.getWriter().write(token);
                     }
                 })
                 .failureHandler(new AuthenticationFailureHandler() {
@@ -87,9 +93,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .logoutSuccessHandler(new LogoutSuccessHandler() {
                     @Override
                     public void onLogoutSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
-                        resp.setContentType("application/json;charset=utf-8");
+                        resp.setHeader("Access-Control-Allow-Origin", "*");
+                        resp.setHeader("Access-Control-Allow-Methods", "*");
+                        resp.setContentType("application/json;charset=UTF-8");
                         PrintWriter out = resp.getWriter();
-                        out.write("logout success");
+                        String token = securityUserDetailsService.getToken(req);
+                        securityUserDetailsService.userOutLogin(token);
+                        out.write("退出成功");
                         out.flush();
                     }
                 })
@@ -98,6 +108,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .httpBasic()
                 .and()
                 .csrf().disable();
+        http.headers().cacheControl();
+        http.headers().frameOptions().disable();
+        http.addFilterBefore(lindTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override

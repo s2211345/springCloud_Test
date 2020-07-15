@@ -6,4 +6,10 @@ import com.lwc.test.view.sys.request.SysUserReqVO;
 import com.lwc.test.view.sys.response.SysUserRespVO;
 
 public interface SysUserService extends BaseService<SysUser, SysUserReqVO, SysUserRespVO> {
+    /**
+     * 获得当前用户
+     * @param userReqVO
+     * @return
+     */
+    SysUserRespVO getCurrentUser(SysUserReqVO userReqVO);
 }

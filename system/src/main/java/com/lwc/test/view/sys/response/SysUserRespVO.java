@@ -23,7 +23,7 @@ import java.util.List;
 public class SysUserRespVO extends BaseResponseView implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
+	private Integer id;
 	// 用户名
 	private String userName;
 	// 密码

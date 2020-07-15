@@ -52,6 +52,9 @@ public class SysUserReqVO extends BaseRequestView implements UserDetails {
 	// 创建用户
 	private String createUser;
 
+	//用户Token
+	private String token;
+
 	private List<GrantedAuthority> authoritys;
 
 	@Override
