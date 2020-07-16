@@ -17,14 +17,12 @@ import java.io.IOException;
 @WebFilter(urlPatterns = "/*", filterName = "corsFilter", asyncSupported = true)
 @Component
 public class SysCorsFilter extends OncePerRequestFilter {
-
 	/* 跨域请求配置 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
 			throws ServletException, IOException {
 		HttpServletResponse response = (HttpServletResponse) res;
 		HttpServletRequest reqs = (HttpServletRequest) req;
-		log.info("origin={}",reqs.getHeader("Origin"));
 		response.setHeader("Access-Control-Allow-Origin", reqs.getHeader("Origin"));
 		response.setHeader("Access-Control-Allow-Credentials", "true");
 		response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE");
@@ -35,5 +33,4 @@ public class SysCorsFilter extends OncePerRequestFilter {
 		res = response;
 		chain.doFilter(req, res);
 	}
-
 }

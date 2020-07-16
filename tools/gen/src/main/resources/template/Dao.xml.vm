@@ -25,14 +25,14 @@
 #end
 	</sql>
 
-	<select id="queryById" resultType="${package}.model.${project}.${className}" resultMap="${classname}Map">
+	<select id="queryById" resultType="${package}.view.${project}.response.${className}RespVO">
 		select
 		<include refid="Base_Column_List" />
 		from ${tableName} ${alias}
 		where ${alias}.${pk.columnName} = #{value}
 	</select>
 
-	<select id="queryByReq" resultType="${package}.model.${project}.${className}" resultMap="${classname}Map">
+	<select id="queryByReq" resultType="${package}.view.${project}.response.${className}RespVO">
 		select
 		<include refid="Base_Column_List" />
 		from ${tableName} ${alias}

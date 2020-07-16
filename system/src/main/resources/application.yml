@@ -34,8 +34,9 @@ spring:
         max-wait: 1ms
       shutdown-timeout: 100ms
 mybatis:
-  type-aliases-package: com.xwckeji.ms.server.model
-  mapper-locations: classpath*:/mybatis-mappers/*
+  type-aliases-package: com.lwc.test.model
+#  mapper-locations: classpath*:/mybatis-mappers/*
+  mapper-locations: classpath:/mybatis-mappers/*
   configuration:
     mapUnderscoreToCamelCase: true
     #开启打印sql日志
@@ -44,3 +45,4 @@ mybatis:
 token:
   expire:
     seconds: 7200
+  jwtSecret: TEST;SPRINGBOOT;PROJECT;12345679

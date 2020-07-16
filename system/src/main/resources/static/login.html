@@ -124,19 +124,22 @@
 		$(this).hide().siblings('input').val('');
 	})
 	var token = localStorage.getItem("token");
-	if (token != null && token.trim().length != 0) {
-		let formdata = {
-			'token':token
-		}
+	if (token) {
 		$.ajax({
 			type: 'get',
 			contentType: "application/json; charset=utf-8",
-			url: '/admin/sysUser/getCurrentUser?token=' + token,
-			data : JSON.stringify(formdata),
+			url: '/admin/sysUser/getCurrentUser',
+			headers:{
+				tokenHeader: token
+			},
 			success: function (data) {
-				location.href = '/index.html';
+				console.log(data)
+				if(data){
+					location.href = '/index.html';
+				}
 			},
 			error: function (xhr, textStatus, errorThrown) {
+				console.log(xhr)
 				var msg = xhr.responseText;
 				var response = JSON.parse(msg);
 				var code = response.code;
@@ -162,14 +165,29 @@
 				url: '/admin/sysUser/doLogin',
 				data: $("#login-form").serialize(),
 				success: function (data) {
-					console.log("进入成功");
-					console.log(data);
+					console.log(data)
+					if(data.code){
+						if(data.code != '200'){
+							$("#info").html(data.msg);
+							$(obj).attr("disabled", false);
+							return;
+						}
+					}
 					localStorage.setItem("token", data);
 					location.href = '/index.html';
 				},
 				error: function (xhr, textStatus, errorThrown) {
-					console.log("进入失败");
-					$("#info").html(xhr.responseText);
+					if(xhr.status == 200){
+						let tokenJSON = $.parseJSON(xhr.responseText);
+						localStorage.setItem("accessToken", xhr.responseText);
+						localStorage.setItem("token", tokenJSON.token);
+						location.href = '/index.html';
+					}else if(xhr.status == 500){
+						$("#info").html("网络错误，请刷新重试");
+						console.log(xhr.responseJSON.error);
+					}else{
+						$("#info").html(xhr.responseText);
+					}
 					$(obj).attr("disabled", false);
 				}
 			});

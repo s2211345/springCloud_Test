@@ -9,6 +9,7 @@ public enum ErrorEnum {
     DATA_FORMAT_ERROR("005","传入数据格式异常"),
     REQUWST_METHOD_ERROR("06","请求method不正确"),
     CONTENT_TYPE_ERROR("07","Content-Type需设置application/json"),
+    VERIFY_CODE_ERROR("08","验证码异常"),
     SYSTEM_ERROR("500","网络异常，请刷新页面重试"),
     TOKEN_EXPIRED_ERROR("500","307"),
          ;

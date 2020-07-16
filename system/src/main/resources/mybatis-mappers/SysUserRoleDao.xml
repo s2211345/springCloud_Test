@@ -17,14 +17,14 @@
 		<if test="roleId != null and roleId != ''">AND ur.`role_id` = #{roleId}</if>
 	</sql>
 
-	<select id="queryById" resultType="com.lwc.test.model.sys.SysUserRole" resultMap="sysUserRoleMap">
+	<select id="queryById" resultType="com.lwc.test.view.sys.response.SysUserRoleRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_user_role ur
 		where ur.user_id = #{value}
 	</select>
 
-	<select id="queryByReq" resultType="com.lwc.test.model.sys.SysUserRole" resultMap="sysUserRoleMap">
+	<select id="queryByReq" resultType="com.lwc.test.view.sys.response.SysUserRoleRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_user_role ur

@@ -32,14 +32,14 @@
 		<if test="updateTime != null and updateTime != ''">AND l.`update_time` = #{updateTime}</if>
 	</sql>
 
-	<select id="queryById" resultType="com.lwc.test.model.sys.SysLog" resultMap="sysLogMap">
+	<select id="queryById" resultType="com.lwc.test.view.sys.response.SysLogRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_log l
 		where l.id = #{value}
 	</select>
 
-	<select id="queryByReq" resultType="com.lwc.test.model.sys.SysLog" resultMap="sysLogMap">
+	<select id="queryByReq" resultType="com.lwc.test.view.sys.response.SysLogRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_log l

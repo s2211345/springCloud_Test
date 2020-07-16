@@ -3,9 +3,12 @@ package com.lwc.test.service.sys.impl.security;
 import com.lwc.test.controller.sys.SysLogController;
 import com.lwc.test.enums.base.BaseStatusCodeEnum;
 import com.lwc.test.model.sys.SysLog;
+import com.lwc.test.model.sys.security.AccessToken;
 import com.lwc.test.service.sys.SysLogService;
 import com.lwc.test.service.sys.SysUserService;
 import com.lwc.test.utils.AESUtils;
+import com.lwc.test.utils.DateUtils;
+import com.lwc.test.utils.SecurityTokenUtils;
 import com.lwc.test.view.sys.request.SysUserReqVO;
 import com.lwc.test.view.sys.response.SysUserRespVO;
 import org.apache.commons.lang3.StringUtils;
@@ -14,10 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -39,14 +41,16 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private SysLogService sysLogService;
     @Autowired
-    RedisTemplate redisTemplate;
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private SecurityTokenUtils tokenUtils;
+    @Autowired
+    private SecurityTokenUtils securityTokenUtils;
+    
     @Value("${token.expire.seconds}")
     private Integer expireSeconds;
 
-    private static final String tokenHead = "Bearer ";
-    private static final String tokenHeader = "Authorization";
 
-    private String tokenPrefix = "sys_token:";
 
     /**
      * 检测用户名是否存在和用户状态是否正常，验证验证码，返回UserDetails信息
@@ -62,6 +66,9 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
         String genCaptcha = (String) request.getSession().getAttribute("index_login_code");
         if (StringUtils.isBlank(requestCaptcha)) {
             throw new AuthenticationServiceException("验证码不能为空!");
+        }
+        if(StringUtils.isBlank(genCaptcha)){
+            throw new AuthenticationServiceException("验证码已过期，请刷新验证码!");
         }
         if (!genCaptcha.toLowerCase().equals(requestCaptcha.toLowerCase())) {
             throw new AuthenticationServiceException("验证码错误!");
@@ -84,10 +91,8 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
      * @param loginUser
      * @return
      */
-    public String getAndSaveToken(SysUserRespVO loginUser) {
-        String token = AESUtils.encrypt(loginUser.getUsername());
-        loginUser.setToken(token);
-        saveSysUser(loginUser);
+    public AccessToken getAndSaveToken(SysUserRespVO loginUser) {
+        AccessToken token = securityTokenUtils.createToken(loginUser);
         // 登录日志
         SysLog sysLog = new SysLog();
         sysLog.setUserId(loginUser.getId());
@@ -98,59 +103,41 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
         return token;
     }
 
-    /**
-     * 保存用户信息到Redis
-     * @param loginUser
-     */
-    private void saveSysUser(SysUserRespVO loginUser) {
-        loginUser.setLoginTime(System.currentTimeMillis());
-        loginUser.setExpireTime(loginUser.getLoginTime() + expireSeconds * 1000);
-        log.info(loginUser.getLoginTime() + " : " + loginUser.getCreateUser() + "登录");
-        // 缓存
-        redisTemplate.boundValueOps(getTokenKey(loginUser.getToken())).set(loginUser, expireSeconds, TimeUnit.SECONDS);
-    }
-
-    private String getTokenKey(String token) {
-        return tokenPrefix + token;
-    }
-
-    public String getToken(HttpServletRequest request) {
-        String token = request.getParameter(tokenHeader);
-        if (StringUtils.isEmpty(token)) {
-            token = request.getHeader(tokenHeader);
-        }
-        if(token.startsWith(tokenHead)){
-            token = token.substring(tokenHead.length());
-        }
-
-        return token;
-    }
-
-    public String getTokenByString(String token) {
-        if (StringUtils.isEmpty(token)) {
-            token = request.getHeader(tokenHeader);
-        }
-        if(token.startsWith(tokenHead)){
-            token = token.substring(tokenHead.length());
-        }
-        return token;
-    }
-
     public boolean userOutLogin(String token){
-        String key = getTokenKey(token);
-        SysUserRespVO loginUser = (SysUserRespVO)redisTemplate.opsForValue().get(key);
-        if (redisTemplate.hasKey(key)) {
-            redisTemplate.delete(key);
+        SysUserRespVO userRespVO = new SysUserRespVO();
+        userRespVO.setUserName(securityTokenUtils.getSubjectFromToken(token));
+        if(securityTokenUtils.validateToken(token,userRespVO)){
+            securityTokenUtils.addTokenBlacklist(token);
+            SysUserReqVO queryParam = new SysUserReqVO();
+            queryParam.setUserName(userRespVO.getUsername());
+            SysUserRespVO user = sysUserService.queryByReq(queryParam);
             // 退出日志
             SysLog sysLog = new SysLog();
-            sysLog.setUserId(loginUser.getId());
+            sysLog.setUserId(user.getId());
             sysLog.setOperation("退出");
             sysLog.setFlag(true);
             sysLog.setCreateTime(new Date());
             sysLogService.save(sysLog);
             return true;
         }
-
         return false;
+    }
+
+    /**
+     * 从上下文中取得认证对象
+     * @return
+     */
+    public SysUserRespVO getLoginUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            if (authentication instanceof AnonymousAuthenticationToken) {
+                return null;
+            }
+
+            if (authentication instanceof UsernamePasswordAuthenticationToken) {
+                return (SysUserRespVO) authentication.getPrincipal();
+            }
+        }
+        return null;
     }
 }

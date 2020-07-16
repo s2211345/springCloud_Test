@@ -2,7 +2,10 @@ package com.lwc.test.filter.sys;
 
 import com.lwc.test.service.sys.SysUserService;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
+import com.lwc.test.utils.SecurityTokenUtils;
+import com.lwc.test.view.sys.request.SysUserReqVO;
 import com.lwc.test.view.sys.response.SysUserRespVO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,32 +33,47 @@ public class LindTokenAuthenticationFilter extends OncePerRequestFilter {
   private static final String tokenHeader = "Authorization";
   @Autowired
   private SecurityUserDetailsServiceImpl userDetailsService;
+  @Autowired
+  private SysUserService sysUserService;
+  @Autowired
+  private SecurityTokenUtils securityTokenUtils;
 
+  /**
+   * 如果带有Authorization，
+   * @param request
+   * @param response
+   * @param filterChain
+   * @throws ServletException
+   * @throws IOException
+   */
   @Override
   protected void doFilterInternal(
           HttpServletRequest request,
           HttpServletResponse response,
           FilterChain filterChain) throws ServletException, IOException {
 
-    String authHeader = request.getHeader(tokenHeader);
-    if (authHeader != null && authHeader.startsWith(tokenHead)) {
-      final String authToken = authHeader.substring(tokenHead.length()); // The part after "Bearer "
-      if (authToken != null && redisTemplate.hasKey(authToken)) {
-        String username = redisTemplate.opsForValue().get(authToken);
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-          UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-          //可以校验token和username是否有效，目前由于token对应username存在redis，都以默认都是有效的
-          UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                  userDetails, null, userDetails.getAuthorities());
-          authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(
-                  request));
-          logger.info("authenticated user " + username + ", setting security context");
-          SecurityContextHolder.getContext().setAuthentication(authentication);
+    String token = securityTokenUtils.getTokenByRequest(request);
+    if (StringUtils.isNotBlank(token)) {
+      String userName = securityTokenUtils.getSubjectFromToken(token);
+      if (securityTokenUtils.checkBlacklist(token) && StringUtils.isNotBlank(userName)) {
+        SysUserRespVO userRespVO = new SysUserRespVO();
+        userRespVO.setUserName(userName);
+        if(securityTokenUtils.validateToken(token,userRespVO)){
+          if (StringUtils.isNotBlank(userName) && SecurityContextHolder.getContext().getAuthentication() == null) {
+            SysUserReqVO queryParam = new SysUserReqVO();
+            queryParam.setUserName(userName);
+            UserDetails userDetails = sysUserService.queryByReq(queryParam);
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(
+                    request));
+            logger.info("用户：" + userName + "传入Token信息并且Token过期, 更新token");
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+          }
         }
       }
     }
 
     filterChain.doFilter(request, response);
-
   }
 }

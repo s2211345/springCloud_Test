@@ -26,14 +26,14 @@
 		<if test="updateTime != null and updateTime != ''">AND r.`update_time` = #{updateTime}</if>
 	</sql>
 
-	<select id="queryById" resultType="com.lwc.test.model.sys.SysRole" resultMap="sysRoleMap">
+	<select id="queryById" resultType="com.lwc.test.view.sys.response.SysRoleRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_role r
 		where r.id = #{value}
 	</select>
 
-	<select id="queryByReq" resultType="com.lwc.test.model.sys.SysRole" resultMap="sysRoleMap">
+	<select id="queryByReq" resultType="com.lwc.test.view.sys.response.SysRoleRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_role r

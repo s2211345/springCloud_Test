@@ -57,14 +57,14 @@
 				<if test="createUser != null and createUser != ''">AND u.`create_user` = #{createUser}</if>
 		</sql>
 
-	<select id="queryById" resultType="com.lwc.test.model.sys.SysUser" resultMap="sysUserMap">
+	<select id="queryById" resultType="com.lwc.test.view.sys.response.SysUserRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_user u
 		where u.id = #{value}
 	</select>
 
-	<select id="queryByReq" resultType="com.lwc.test.model.sys.SysUser" resultMap="sysUserMap">
+	<select id="queryByReq" resultType="com.lwc.test.view.sys.response.SysUserRespVO" >
 		select
 		<include refid="Base_Column_List" />
 		from sys_user u

@@ -17,14 +17,14 @@
 		<if test="menu != null and menu != ''">AND rm.`menu` = #{menu}</if>
 	</sql>
 
-	<select id="queryById" resultType="com.lwc.test.model.sys.SysRoleMenu" resultMap="sysRoleMenuMap">
+	<select id="queryById" resultType="com.lwc.test.view.sys.response.SysRoleMenuRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_role_menu rm
 		where rm.role_id = #{value}
 	</select>
 
-	<select id="queryByReq" resultType="com.lwc.test.model.sys.SysRoleMenu" resultMap="sysRoleMenuMap">
+	<select id="queryByReq" resultType="com.lwc.test.view.sys.response.SysRoleMenuRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_role_menu rm

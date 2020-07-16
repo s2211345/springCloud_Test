@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class BaseServiceImpl<T extends BaseModel,REQ extends BaseRequestView,RESP extends BaseResponseView> implements BaseService<T,REQ,RESP> {
+public class BaseServiceImpl<T extends BaseModel,REQ,RESP> implements BaseService<T,REQ,RESP> {
 
     public BaseDao<T,REQ,RESP> dao;
     // 注入Dao

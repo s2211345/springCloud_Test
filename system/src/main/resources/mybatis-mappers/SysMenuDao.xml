@@ -44,14 +44,14 @@
 		<if test="createUser != null and createUser != ''">AND m.`create_user` = #{createUser}</if>
 	</sql>
 
-	<select id="queryById" resultType="com.lwc.test.model.sys.SysMenu" resultMap="sysMenuMap">
+	<select id="queryById" resultType="com.lwc.test.view.sys.response.SysMenuRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_menu m
 		where m.id = #{value}
 	</select>
 
-	<select id="queryByReq" resultType="com.lwc.test.model.sys.SysMenu" resultMap="sysMenuMap">
+	<select id="queryByReq" resultType="com.lwc.test.view.sys.response.SysMenuRespVO">
 		select
 		<include refid="Base_Column_List" />
 		from sys_menu m

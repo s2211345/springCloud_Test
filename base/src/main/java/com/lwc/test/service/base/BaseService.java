@@ -7,7 +7,7 @@ import com.lwc.test.view.base.response.BaseResponseView;
 import java.util.List;
 import java.util.Map;
 
-public interface BaseService<T extends BaseModel,REQ extends BaseRequestView,RESP extends BaseResponseView> {
+public interface BaseService<T extends BaseModel,REQ,RESP> {
     //增删改查
     int save(T record);
     T queryById(Integer id);

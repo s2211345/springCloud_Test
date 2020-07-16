@@ -9,6 +9,8 @@
   <version>1.0-SNAPSHOT</version>
   <modules>
     <module>tools</module>
+    <module>system</module>
+    <module>base</module>
   </modules>
   <packaging>pom</packaging>
 
@@ -35,6 +37,7 @@
     <jjwt.version>0.9.1</jjwt.version>
     <swagger.version>2.8.0</swagger.version>
     <commons.pool2.version>2.5.0</commons.pool2.version>
+    <alibaba.fastjson.version>1.2.72</alibaba.fastjson.version>
   </properties>
 
   <dependencies>
@@ -153,6 +156,12 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
         <version>${commons.pool2.version}</version>
+      </dependency>
+      <!-- 阿里巴巴fastJson库 -->
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>${alibaba.fastjson.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

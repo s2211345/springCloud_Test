@@ -1,7 +1,10 @@
 package com.lwc.test.config.sys;
 
+import com.alibaba.fastjson.JSONObject;
 import com.lwc.test.filter.sys.LindTokenAuthenticationFilter;
+import com.lwc.test.model.sys.security.AccessToken;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
+import com.lwc.test.utils.SecurityTokenUtils;
 import com.lwc.test.view.sys.response.SysUserRespVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +35,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     private SecurityUserDetailsServiceImpl securityUserDetailsService;
     @Autowired
     private LindTokenAuthenticationFilter lindTokenAuthenticationFilter;
+    @Autowired
+    private SecurityTokenUtils tokenUtils;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -45,9 +50,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()//开启登录配置
-                .antMatchers("/admin/verifyCode/vercode","/admin/sysUser/login","/login.html",
-                        "/test/getPass").permitAll() //不需要验证的接口
+        //开启登录配置
+        http.authorizeRequests()
+                //不需要验证的接口
+                .antMatchers("/admin/verifyCode/vercode","/admin/sysUser/login",
+                        "/test/getPass","/admin/sysUser/getCurrentUser").permitAll()
                 .anyRequest().authenticated()//表示以外的访问都需要登录
                 .and()
                 .formLogin()
@@ -60,17 +67,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                     @Override
                     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
                         SysUserRespVO user = (SysUserRespVO) authentication.getPrincipal();
-
-                        /*Token token = tokenService.saveToken(loginUser);
-                        ResponseUtil.responseJson(response, HttpStatus.OK.value(), token);*/
                         resp.setHeader("Access-Control-Allow-Origin", "*");
                         resp.setHeader("Access-Control-Allow-Methods", "*");
                         resp.setContentType("application/json;charset=UTF-8");
                         resp.setStatus(200);
-                        String token = securityUserDetailsService.getAndSaveToken(user);
-                        resp.getWriter().write(token);
+                        AccessToken accessToken = securityUserDetailsService.getAndSaveToken(user);
+                        resp.getWriter().write(JSONObject.toJSONString(accessToken));
                     }
-                })
+                })  //登录失败
                 .failureHandler(new AuthenticationFailureHandler() {
                     @Override
                     public void onAuthenticationFailure(HttpServletRequest req, HttpServletResponse resp, AuthenticationException exception) throws IOException, ServletException {
@@ -88,7 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 })
                 .permitAll()//和表单登录相关的接口统统都直接通过
                 .and()
-                .logout()
+                .logout()   //登出部分
                 .logoutUrl("/logout")
                 .logoutSuccessHandler(new LogoutSuccessHandler() {
                     @Override
@@ -97,7 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                         resp.setHeader("Access-Control-Allow-Methods", "*");
                         resp.setContentType("application/json;charset=UTF-8");
                         PrintWriter out = resp.getWriter();
-                        String token = securityUserDetailsService.getToken(req);
+                        String token = tokenUtils.getTokenByRequest(req);
                         securityUserDetailsService.userOutLogin(token);
                         out.write("退出成功");
                         out.flush();
@@ -110,18 +114,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .csrf().disable();
         http.headers().cacheControl();
         http.headers().frameOptions().disable();
+        //添加拦截器拦截token
         http.addFilterBefore(lindTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
+    /**
+     * 设置拦截忽略文件夹，可以对静态资源放行
+     * @param web
+     * @throws Exception
+     */
     @Override
     public void configure(WebSecurity web) throws Exception {
-        // 设置拦截忽略文件夹，可以对静态资源放行
-        web.ignoring().antMatchers("/statics/**");
+        web.ignoring().antMatchers("/statics/js/**");
+        web.ignoring().antMatchers("/statics/css/**");
+        web.ignoring().antMatchers("/statics/img/**");
+        web.ignoring().antMatchers("/login.html");
+        web.ignoring().antMatchers("/404");
+        web.ignoring().antMatchers("/500");
     }
 
+    /**
+     * 使用自定义认证规则，并且使用BCrypt算法处理密码
+     * @param auth
+     * @throws Exception
+     */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        //使用自定义认证规则，并且使用BCrypt算法处理密码
         auth.userDetailsService(securityUserDetailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
 }
