@@ -6,6 +6,7 @@ import com.lwc.test.view.sys.response.SysUserRespVO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +23,13 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Slf4j
 public class SecurityTokenUtils {
-    private static final Logger log = LoggerFactory.getLogger(SecurityTokenUtils.class);
 
-    private static final String tokenHead = "Bearer ";
-    private static final String tokenHeader = "Authorization";
+    private static final String TOKENHEAD = "Bearer ";
+    private static final String TOKENHEADER = "Authorization";
+    private static final String BLACKLIST = "blacklist:";
+    private static final String USER_TOKEN = "user_token:";
 
     @Autowired
     private HttpServletRequest request;
@@ -42,9 +45,9 @@ public class SecurityTokenUtils {
      * @return
      */
     public String getTokenByRequest(HttpServletRequest request) {
-        String token = request.getParameter(tokenHeader);
+        String token = request.getParameter(TOKENHEADER);
         if (StringUtils.isEmpty(token)) {
-            token = request.getHeader(tokenHeader);
+            token = request.getHeader(TOKENHEADER);
         }
         return token;
     }
@@ -98,20 +101,31 @@ public class SecurityTokenUtils {
      */
     public AccessToken refreshToken(String oldToken) {
         String token = formatTokenDelBearer(oldToken);
-
         // token反解析
         Claims claims = getClaimsFromToken(token);
-
-        //如果token在30分钟之内刚刷新过，返回原token
-        if (tokenRefreshJustBefore(claims)) {
-            return AccessToken.builder().loginAccount(claims.getSubject()).token(oldToken).expirationTime(claims.getExpiration()).build();
+        //同步问题检测
+        if (checkBlacklist(oldToken)) {
+            //如果token在还未过去1个小时，返回原token，不需刷新
+            if (!tokenRefreshJustBefore(claims)) {
+                return AccessToken.builder().loginAccount(claims.getSubject()).token(oldToken).expirationTime(claims.getExpiration()).build();
+            } else {
+                //旧token进入黑名单
+                //同步问题检测
+                // 防止已新建token,但是同步请求到这里传入旧token刷新导致之前已新建token存在但未加入黑名单问题
+                if (checkBlacklist(oldToken)) {
+                    addTokenBlacklist(oldToken);
+                }else{
+                    return null;
+                }
+                return createToken(claims.getSubject());
+            }
         } else {
-            return createToken(claims.getSubject());
+            return null;
         }
     }
 
     /**
-     * 判断token是否需要刷新，token过期，但不超过1小时
+     * 判断token是否在有效期内，并且已经过去1个小时
      */
     private boolean tokenRefreshJustBefore(Claims claims) {
         Date refreshDate = new Date();
@@ -139,7 +153,6 @@ public class SecurityTokenUtils {
         return claims;
     }
 
-
     /**
      * 从token中获取主题
      */
@@ -166,7 +179,7 @@ public class SecurityTokenUtils {
      */
     public void addTokenBlacklist(String token){
         token = formatTokenDelBearer(token);
-        redisTemplate.boundValueOps(token).set("",jwtProperties.getExpirationTime(), TimeUnit.SECONDS);
+        redisTemplate.boundValueOps(BLACKLIST+token).set("",jwtProperties.getExpirationTime(), TimeUnit.SECONDS);
     }
 
     /**
@@ -175,13 +188,31 @@ public class SecurityTokenUtils {
      */
     public Boolean checkBlacklist(String token){
         token = formatTokenDelBearer(token);
-        if(redisTemplate.hasKey(token)){
+        if(redisTemplate.hasKey(BLACKLIST+token)){
             return true;
         }else{
             return false;
         }
     }
 
+    /**
+     * 缓存用户信息
+     * @param user
+     */
+    public void setCacheUserByToken(SysUserRespVO user){
+        String token = formatTokenDelBearer(user.getToken());
+        redisTemplate.boundValueOps(USER_TOKEN + token).set(user,jwtProperties.getExpirationTime(), TimeUnit.SECONDS);
+    }
+
+    /**
+     * 从缓存中获得用户信息
+     * @param token
+     * @return
+     */
+    public SysUserRespVO getCacheUserByToken(String token){
+        token = formatTokenDelBearer(token);
+        return (SysUserRespVO)redisTemplate.opsForValue().get(USER_TOKEN + token);
+    }
 
     /**
      * 时间偏移 （秒）
@@ -196,12 +227,11 @@ public class SecurityTokenUtils {
         c.setTime(date);
         c.add(Calendar.SECOND, second);    // 秒
         date = c.getTime();
-        System.out.println(df.format(date));
         return date;
     }
 
     public String formatTokenDelBearer(String token){
-        return token.substring(tokenHead.length());
+        return token.substring(TOKENHEAD.length());
     }
 
 }

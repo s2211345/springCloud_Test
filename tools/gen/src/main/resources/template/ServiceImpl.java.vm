@@ -17,7 +17,6 @@ import javax.annotation.Resource;
 @Service("${classname}Service")
 @Slf4j
 public class ${className}ServiceImpl extends BaseServiceImpl<${className},${className}ReqVO, ${className}RespVO> implements ${className}Service {
-	private static final Logger log = LoggerFactory.getLogger(${className}ServiceImpl.class);
 
 	@Override
 	@Resource(name = "${classname}Dao")

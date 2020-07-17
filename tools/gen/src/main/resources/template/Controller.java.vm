@@ -25,10 +25,9 @@ import java.util.List;
  */
 @Api("${comments}")
 @RestController
-@RequestMapping("/${pathName}")
+@RequestMapping("/admin/${pathName}")
 @Slf4j
 public class ${className}Controller{
-	private static final Logger log = LoggerFactory.getLogger(${className}Controller.class);
 
 	@Autowired
 	private ${className}Service ${classname}Service;

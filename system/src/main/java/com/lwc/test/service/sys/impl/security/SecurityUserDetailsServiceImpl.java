@@ -93,6 +93,8 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
      */
     public AccessToken getAndSaveToken(SysUserRespVO loginUser) {
         AccessToken token = securityTokenUtils.createToken(loginUser);
+        loginUser.setToken(token.getToken());
+        securityTokenUtils.setCacheUserByToken(loginUser);
         // 登录日志
         SysLog sysLog = new SysLog();
         sysLog.setUserId(loginUser.getId());
@@ -108,9 +110,7 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
         userRespVO.setUserName(securityTokenUtils.getSubjectFromToken(token));
         if(securityTokenUtils.validateToken(token,userRespVO)){
             securityTokenUtils.addTokenBlacklist(token);
-            SysUserReqVO queryParam = new SysUserReqVO();
-            queryParam.setUserName(userRespVO.getUsername());
-            SysUserRespVO user = sysUserService.queryByReq(queryParam);
+            SysUserRespVO user = securityTokenUtils.getCacheUserByToken(token);
             // 退出日志
             SysLog sysLog = new SysLog();
             sysLog.setUserId(user.getId());

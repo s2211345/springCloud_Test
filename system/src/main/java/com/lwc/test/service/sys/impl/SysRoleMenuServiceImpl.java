@@ -17,7 +17,6 @@ import javax.annotation.Resource;
 @Service("sysRoleMenuService")
 @Slf4j
 public class SysRoleMenuServiceImpl extends BaseServiceImpl<SysRoleMenu,SysRoleMenuReqVO, SysRoleMenuRespVO> implements SysRoleMenuService {
-	private static final Logger log = LoggerFactory.getLogger(SysRoleMenuServiceImpl.class);
 
 	@Override
 	@Resource(name = "sysRoleMenuDao")

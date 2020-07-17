@@ -17,7 +17,6 @@ import javax.annotation.Resource;
 @Service("sysLogService")
 @Slf4j
 public class SysLogServiceImpl extends BaseServiceImpl<SysLog,SysLogReqVO, SysLogRespVO> implements SysLogService {
-	private static final Logger log = LoggerFactory.getLogger(SysLogServiceImpl.class);
 
 	@Override
 	@Resource(name = "sysLogDao")

@@ -2,9 +2,11 @@ package com.lwc.test.filter.sys;
 
 import com.lwc.test.service.sys.SysUserService;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
+import com.lwc.test.utils.DateUtils;
 import com.lwc.test.utils.SecurityTokenUtils;
 import com.lwc.test.view.sys.request.SysUserReqVO;
 import com.lwc.test.view.sys.response.SysUserRespVO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,11 +22,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * 如果连接带Token，尝试刷新授权
  */
 @Component
+@Slf4j
 public class LindTokenAuthenticationFilter extends OncePerRequestFilter {
 
   @Autowired
@@ -55,20 +59,31 @@ public class LindTokenAuthenticationFilter extends OncePerRequestFilter {
     String token = securityTokenUtils.getTokenByRequest(request);
     if (StringUtils.isNotBlank(token)) {
       String userName = securityTokenUtils.getSubjectFromToken(token);
-      if (securityTokenUtils.checkBlacklist(token) && StringUtils.isNotBlank(userName)) {
+      //检查是否黑名单
+      if ( !securityTokenUtils.checkBlacklist(token) && StringUtils.isNotBlank(userName)) {
         SysUserRespVO userRespVO = new SysUserRespVO();
         userRespVO.setUserName(userName);
+        //检查是否过期
         if(securityTokenUtils.validateToken(token,userRespVO)){
-          if (StringUtils.isNotBlank(userName) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            SysUserReqVO queryParam = new SysUserReqVO();
-            queryParam.setUserName(userName);
-            UserDetails userDetails = sysUserService.queryByReq(queryParam);
+          //系统内没有认证带TOKEN才需要自动登录
+          if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            //从缓存中获得用户信息
+            UserDetails userDetails = securityTokenUtils.getCacheUserByToken(token);
+            if(null == userDetails){
+              SysUserReqVO reqParam = new SysUserReqVO();
+              reqParam.setUserName(userName);
+              SysUserRespVO user = sysUserService.queryByReq(reqParam);
+              securityTokenUtils.setCacheUserByToken(user);
+              userDetails = user;
+            }
+            //组装authentication对象
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(
                     request));
-            logger.info("用户：" + userName + "传入Token信息并且Token过期, 更新token");
+            //将authentication信息放入到上下文对象中
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.info(userDetails.getUsername() + "使用TOKEN自动登录成功");
           }
         }
       }

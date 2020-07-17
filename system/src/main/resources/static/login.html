@@ -134,7 +134,7 @@
 			},
 			success: function (data) {
 				console.log(data)
-				if(data){
+				if(data.code == '200'){
 					location.href = '/index.html';
 				}
 			},
@@ -162,9 +162,10 @@
 		} else {
 			$.ajax({
 				type: 'post',
-				url: '/admin/sysUser/doLogin',
+				url: '/admin/user/doLogin',
 				data: $("#login-form").serialize(),
 				success: function (data) {
+					console.log("成功进入")
 					console.log(data)
 					if(data.code){
 						if(data.code != '200'){
@@ -177,6 +178,7 @@
 					location.href = '/index.html';
 				},
 				error: function (xhr, textStatus, errorThrown) {
+					console.log("失败")
 					if(xhr.status == 200){
 						let tokenJSON = $.parseJSON(xhr.responseText);
 						localStorage.setItem("accessToken", xhr.responseText);

@@ -25,10 +25,9 @@ import java.util.List;
  */
 @Api("用户操作记录")
 @RestController
-@RequestMapping("/syslog")
+@RequestMapping("/admin/syslog")
 @Slf4j
 public class SysLogController{
-	private static final Logger log = LoggerFactory.getLogger(SysLogController.class);
 
 	@Autowired
 	private SysLogService sysLogService;

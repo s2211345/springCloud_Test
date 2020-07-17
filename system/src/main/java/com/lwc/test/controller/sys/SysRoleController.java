@@ -25,10 +25,9 @@ import java.util.List;
  */
 @Api("角色表")
 @RestController
-@RequestMapping("/sysrole")
+@RequestMapping("/admin/sysrole")
 @Slf4j
 public class SysRoleController{
-	private static final Logger log = LoggerFactory.getLogger(SysRoleController.class);
 
 	@Autowired
 	private SysRoleService sysRoleService;

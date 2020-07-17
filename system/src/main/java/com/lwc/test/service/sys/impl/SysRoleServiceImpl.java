@@ -17,7 +17,6 @@ import javax.annotation.Resource;
 @Service("sysRoleService")
 @Slf4j
 public class SysRoleServiceImpl extends BaseServiceImpl<SysRole,SysRoleReqVO, SysRoleRespVO> implements SysRoleService {
-	private static final Logger log = LoggerFactory.getLogger(SysRoleServiceImpl.class);
 
 	@Override
 	@Resource(name = "sysRoleDao")

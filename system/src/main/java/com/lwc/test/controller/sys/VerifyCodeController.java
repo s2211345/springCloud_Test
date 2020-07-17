@@ -1,6 +1,7 @@
 package com.lwc.test.controller.sys;
 
 import com.lwc.test.utils.VerifyCodeUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/admin/verifyCode")
+@Slf4j
 public class VerifyCodeController {
     @GetMapping("/vercode")
     public void code(HttpServletRequest req, HttpServletResponse resp) throws IOException {

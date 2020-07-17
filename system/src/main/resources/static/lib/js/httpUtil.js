@@ -4,6 +4,7 @@ var HTTP ={
 		var contentType = options.contentType || 'application/json; charset=utf-8';
 		var okCall = options.okCall || {};
 		var errorCall = options.errorCall || null;
+		var data = options.data || {};
 		var headers = options.headers || {
 			'Authorization': accessToken.token
 		};
@@ -12,22 +13,33 @@ var HTTP ={
 		if(accessToken){
 			return;
 		}
-		if(judgeDate(accessToken.expirationTime) <= 0){
-			localStorage.removeItem("token");
+		//过去1个小时刷新一次token
+		if(judgeDate(accessToken.expirationTime) <= 3600000){ //3600000毫秒 1小时
 			let refreshTokenUrl = '/admin/sysUser/refreshToken?token=' + accessToken.token;
 			$.ajax({
+				async:false,  //刷新token使用同步
 				type : 'get',
 				url : refreshTokenUrl,
 				contentType: contentType,
 				success : function(result) {
 					console.log(result)
-					HTTP.SET_ACCESSTOKEN(result);
+					if(result.code == '202'){
+						layer.msg("认证已失效，请重新登录")
+						location.href = '/login.html';
+					}
+					if(result.code == '200'){
+						if(result.data){
+							localStorage.removeItem("token");
+							HTTP.SET_ACCESSTOKEN(result.data);
+						}
+					}
 				}
 			});
 		}
 		$.ajax({
 			type : 'get',
 			url : url,
+			data:JSON.stringify(data),
 			contentType: contentType,
 			headers: headers,
 			success : function(result) {
@@ -55,16 +67,26 @@ var HTTP ={
 		if(accessToken){
 			return;
 		}
-		if(judgeDate(accessToken.expirationTime) <= 0){
-			localStorage.removeItem("token");
+		//过去1个小时刷新一次token
+		if(judgeDate(accessToken.expirationTime) <= 3600000){ //3600000毫秒 1小时
 			let refreshTokenUrl = '/admin/sysUser/refreshToken?token=' + accessToken.token;
 			$.ajax({
+				async:false,  //刷新token使用同步
 				type : 'get',
 				url : refreshTokenUrl,
 				contentType: contentType,
 				success : function(result) {
 					console.log(result)
-					HTTP.SET_ACCESSTOKEN(result);
+					if(result.code == '202'){
+						layer.msg("认证已失效，请重新登录")
+						location.href = '/login.html';
+					}
+					if(result.code == '200'){
+						if(result.data){
+							localStorage.removeItem("token");
+							HTTP.SET_ACCESSTOKEN(result.data);
+						}
+					}
 				},
 				error:function(result){
 					if(errorCall){

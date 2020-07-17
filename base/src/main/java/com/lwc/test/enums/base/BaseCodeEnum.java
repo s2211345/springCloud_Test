@@ -5,6 +5,7 @@ public enum BaseCodeEnum {
 	SUCCESS_200("200","请求处理成功"),
 	FAIL("500","网络异常,请稍后再试"),
 	REDIRECT_URL("307","重定向"),
+	TOKEN_FAIL("202","Token已失效"),
 	SUCCESS_OK("OK","请求处理成功"),
 	;
 	

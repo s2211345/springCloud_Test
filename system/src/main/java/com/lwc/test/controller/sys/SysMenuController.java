@@ -25,10 +25,9 @@ import java.util.List;
  */
 @Api("菜单表")
 @RestController
-@RequestMapping("/sysmenu")
+@RequestMapping("/admin/sysmenu")
 @Slf4j
 public class SysMenuController{
-	private static final Logger log = LoggerFactory.getLogger(SysMenuController.class);
 
 	@Autowired
 	private SysMenuService sysMenuService;

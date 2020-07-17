@@ -1,6 +1,7 @@
 package com.lwc.test.controller.sys;
 
 import com.lwc.test.controller.base.BaseController;
+import com.lwc.test.enums.base.BaseCodeEnum;
 import com.lwc.test.model.sys.SysUser;
 import com.lwc.test.model.sys.security.AccessToken;
 import com.lwc.test.service.sys.SysUserService;
@@ -48,16 +49,26 @@ public class SysUserController extends BaseController {
 
     @GetMapping("/getCurrentUser")
     @ResponseBody
-    public SysUserRespVO getCurrentUser(){
-        return securityUserDetailsService.getLoginUser();
+    public BaseResult<String> getCurrentUser(){
+        return null != securityUserDetailsService.getLoginUser() ? new BaseResult().success(): new BaseResult().fail();
     }
     @GetMapping("/refreshToken")
     @ResponseBody
-    public AccessToken refreshToken(@RequestParam(value = "token") String oldToken){
+    public BaseResult<AccessToken> refreshToken(@RequestParam(value = "token") String oldToken){
+        BaseResult result = new BaseResult();
         if(StringUtils.isBlank(oldToken)){
-            return null;
+            return result.fail("请传入旧token");
         }
-        return securityTokenUtils.refreshToken(oldToken);
+        if(securityTokenUtils.checkBlacklist(oldToken)){
+            return result.fail("无效token，请检查");
+        }
+        SysUserRespVO userRespVO = new SysUserRespVO();
+        userRespVO.setUserName(securityTokenUtils.getSubjectFromToken(oldToken));
+        if( !securityTokenUtils.validateToken(oldToken,userRespVO)){
+            return result.fail(BaseCodeEnum.TOKEN_FAIL.getCode(),"无效token，或已过期，请重新获取");
+        }
+        AccessToken accessToken = securityTokenUtils.refreshToken(oldToken);
+        return result.success(accessToken);
     }
 
 }
