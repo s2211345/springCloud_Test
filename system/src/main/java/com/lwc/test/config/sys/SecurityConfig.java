@@ -20,6 +20,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -72,7 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .successHandler(new AuthenticationSuccessHandler() {
                     @Override
                     public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
-                        SysUserRespVO user = (SysUserRespVO) authentication.getPrincipal();
+                        UserDetails user = (UserDetails) authentication.getPrincipal();
                         AccessToken accessToken = securityUserDetailsService.getAndSaveToken(user);
                         httpResponseHandle(resp,HttpStatus.OK.value(),new BaseResult<AccessToken>().success(accessToken));
                     }

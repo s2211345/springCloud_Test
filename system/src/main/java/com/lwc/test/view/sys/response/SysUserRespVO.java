@@ -60,8 +60,6 @@ public class SysUserRespVO extends BaseResponseView implements UserDetails {
 	private Long expireTime;
 	private List<GrantedAuthority> authoritys;
 
-
-
 	@Override
 	public String getUsername() {
 		return userName;

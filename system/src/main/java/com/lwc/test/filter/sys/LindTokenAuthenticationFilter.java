@@ -3,9 +3,11 @@ package com.lwc.test.filter.sys;
 import com.lwc.test.service.sys.SysUserService;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
 import com.lwc.test.utils.DateUtils;
+import com.lwc.test.utils.ReflectUtils;
 import com.lwc.test.utils.SecurityTokenUtils;
 import com.lwc.test.view.sys.request.SysUserReqVO;
 import com.lwc.test.view.sys.response.SysUserRespVO;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,7 @@ public class LindTokenAuthenticationFilter extends OncePerRequestFilter {
    * @throws ServletException
    * @throws IOException
    */
+  @SneakyThrows
   @Override
   protected void doFilterInternal(
           HttpServletRequest request,
@@ -70,11 +73,8 @@ public class LindTokenAuthenticationFilter extends OncePerRequestFilter {
             //从缓存中获得用户信息
             UserDetails userDetails = securityTokenUtils.getCacheUserByToken(token);
             if(null == userDetails){
-              SysUserReqVO reqParam = new SysUserReqVO();
-              reqParam.setUserName(userName);
-              SysUserRespVO user = sysUserService.queryByReq(reqParam);
-              securityTokenUtils.setCacheUserByToken(user);
-              userDetails = user;
+              userDetails = userDetailsService.loadUserByUsername(userName);
+              securityTokenUtils.setCacheUserByToken(userDetails,token);
             }
             //组装authentication对象
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

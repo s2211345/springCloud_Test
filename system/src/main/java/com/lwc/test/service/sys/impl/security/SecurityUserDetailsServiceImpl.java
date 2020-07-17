@@ -41,16 +41,10 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private SysLogService sysLogService;
     @Autowired
-    private RedisTemplate redisTemplate;
-    @Autowired
-    private SecurityTokenUtils tokenUtils;
-    @Autowired
     private SecurityTokenUtils securityTokenUtils;
     
     @Value("${token.expire.seconds}")
     private Integer expireSeconds;
-
-
 
     /**
      * 检测用户名是否存在和用户状态是否正常，验证验证码，返回UserDetails信息
@@ -62,16 +56,29 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // 验证码验证
-        String requestCaptcha = request.getParameter("code");
-        String genCaptcha = (String) request.getSession().getAttribute("index_login_code");
-        if (StringUtils.isBlank(requestCaptcha)) {
-            throw new AuthenticationServiceException("验证码不能为空!");
+        //如果带有token并且是有效的跳过code验证 / 给需要获得用户信息和权限的方法使用
+        Boolean isLogin = true;
+        String token = securityTokenUtils.getTokenByRequest(request);
+        if (StringUtils.isNotBlank(token)) {
+            String userName = securityTokenUtils.getSubjectFromToken(token);
+            SysUserRespVO userRespVO = new SysUserRespVO();
+            userRespVO.setUserName(userName);
+            if(securityTokenUtils.validateToken(token,userRespVO)){
+                isLogin = false;
+            }
         }
-        if(StringUtils.isBlank(genCaptcha)){
-            throw new AuthenticationServiceException("验证码已过期，请刷新验证码!");
-        }
-        if (!genCaptcha.toLowerCase().equals(requestCaptcha.toLowerCase())) {
-            throw new AuthenticationServiceException("验证码错误!");
+        if(isLogin) {
+            String requestCaptcha = request.getParameter("code");
+            String genCaptcha = (String) request.getSession().getAttribute("index_login_code");
+            if (StringUtils.isBlank(requestCaptcha)) {
+                throw new AuthenticationServiceException("验证码不能为空!");
+            }
+            if (StringUtils.isBlank(genCaptcha)) {
+                throw new AuthenticationServiceException("验证码已过期，请刷新验证码!");
+            }
+            if (!genCaptcha.toLowerCase().equals(requestCaptcha.toLowerCase())) {
+                throw new AuthenticationServiceException("验证码错误!");
+            }
         }
         SysUserReqVO queryParam = new SysUserReqVO();
         queryParam.setUserName(username);
@@ -91,13 +98,12 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
      * @param loginUser
      * @return
      */
-    public AccessToken getAndSaveToken(SysUserRespVO loginUser) {
+    public AccessToken getAndSaveToken(UserDetails loginUser) {
         AccessToken token = securityTokenUtils.createToken(loginUser);
-        loginUser.setToken(token.getToken());
-        securityTokenUtils.setCacheUserByToken(loginUser);
+        securityTokenUtils.setCacheUserByToken(loginUser,token.getToken());
         // 登录日志
         SysLog sysLog = new SysLog();
-        sysLog.setUserId(loginUser.getId());
+        sysLog.setUserName(loginUser.getUsername());
         sysLog.setOperation("登录");
         sysLog.setFlag(true);
         sysLog.setCreateTime(new Date());
@@ -110,10 +116,10 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
         userRespVO.setUserName(securityTokenUtils.getSubjectFromToken(token));
         if(securityTokenUtils.validateToken(token,userRespVO)){
             securityTokenUtils.addTokenBlacklist(token);
-            SysUserRespVO user = securityTokenUtils.getCacheUserByToken(token);
+            UserDetails user = securityTokenUtils.getCacheUserByToken(token);
             // 退出日志
             SysLog sysLog = new SysLog();
-            sysLog.setUserId(user.getId());
+            sysLog.setUserName(user.getUsername());
             sysLog.setOperation("退出");
             sysLog.setFlag(true);
             sysLog.setCreateTime(new Date());

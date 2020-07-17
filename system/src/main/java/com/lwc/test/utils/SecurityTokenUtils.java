@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +56,7 @@ public class SecurityTokenUtils {
     /**
      * 根据用户信息生成token
      */
-    public AccessToken createToken(SysUserRespVO userDetails) {
+    public AccessToken createToken(UserDetails userDetails) {
         return createToken(userDetails.getUsername());
     }
 
@@ -199,8 +200,8 @@ public class SecurityTokenUtils {
      * 缓存用户信息
      * @param user
      */
-    public void setCacheUserByToken(SysUserRespVO user){
-        String token = formatTokenDelBearer(user.getToken());
+    public void setCacheUserByToken(UserDetails user,String token){
+        token = formatTokenDelBearer(token);
         redisTemplate.boundValueOps(USER_TOKEN + token).set(user,jwtProperties.getExpirationTime(), TimeUnit.SECONDS);
     }
 
@@ -209,9 +210,9 @@ public class SecurityTokenUtils {
      * @param token
      * @return
      */
-    public SysUserRespVO getCacheUserByToken(String token){
+    public UserDetails getCacheUserByToken(String token){
         token = formatTokenDelBearer(token);
-        return (SysUserRespVO)redisTemplate.opsForValue().get(USER_TOKEN + token);
+        return (UserDetails)redisTemplate.opsForValue().get(USER_TOKEN + token);
     }
 
     /**

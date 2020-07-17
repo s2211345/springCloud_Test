@@ -118,7 +118,7 @@ var HTTP ={
 	},
 	SET_ACCESSTOKEN : function (accessJson) {
 		let tokenJSON = $.parseJSON(accessJson);
-		localStorage.setItem("accessToken", result);
+		localStorage.setItem("accessToken", tokenJSON);
 		localStorage.setItem("token", tokenJSON.token);
 	}
 }
