@@ -166,8 +166,6 @@
 				url: '/admin/user/doLogin',
 				data: $("#login-form").serialize(),
 				success: function (data) {
-					console.log("成功进入")
-					console.log(data)
 					if(data.code){
 						if(data.code != '200'){
 							$("#info").html(data.msg);
@@ -175,15 +173,11 @@
 							return;
 						}
 					}
-					HTTP.SET_ACCESSTOKEN(data.responseText)
+					HTTP.SET_ACCESSTOKEN(data.data)
 					location.href = '/index.html';
 				},
 				error: function (xhr, textStatus, errorThrown) {
-					console.log("失败")
-					if(xhr.status == 200){
-						HTTP.SET_ACCESSTOKEN(xhr.responseText)
-						location.href = '/index.html';
-					}else if(xhr.status == 500){
+					if(xhr.status == 500){
 						$("#info").html("网络错误，请刷新重试");
 						console.log(xhr.responseJSON.error);
 					}else{

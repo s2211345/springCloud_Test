@@ -100,7 +100,8 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
      */
     public AccessToken getAndSaveToken(UserDetails loginUser) {
         AccessToken token = securityTokenUtils.createToken(loginUser);
-        securityTokenUtils.setCacheUserByToken(loginUser,token.getToken());
+        String setCacheToken = securityTokenUtils.formatTokenDelBearer(token.getToken());
+        securityTokenUtils.setCacheUserByToken(loginUser,setCacheToken);
         // 登录日志
         SysLog sysLog = new SysLog();
         sysLog.setUserName(loginUser.getUsername());
@@ -117,6 +118,7 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
         if(securityTokenUtils.validateToken(token,userRespVO)){
             securityTokenUtils.addTokenBlacklist(token);
             UserDetails user = securityTokenUtils.getCacheUserByToken(token);
+            securityTokenUtils.delCacheUserByToken(token);
             // 退出日志
             SysLog sysLog = new SysLog();
             sysLog.setUserName(user.getUsername());

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.lwc.test.filter.sys.LindTokenAuthenticationFilter;
 import com.lwc.test.model.sys.security.AccessToken;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
+import com.lwc.test.utils.RequestUtils;
 import com.lwc.test.utils.SecurityTokenUtils;
 import com.lwc.test.view.base.response.BaseResult;
 import com.lwc.test.view.sys.response.SysUserRespVO;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -20,6 +22,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -61,6 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 //不需要验证的接口
                 .antMatchers("/admin/verifyCode/vercode","/test/getPass","/admin/sysUser/getCurrentUser")
                 .permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 //                .anyRequest().authenticated()//表示以外的访问都需要登录
                 .antMatchers("/admin/**","/index.html","/pages/sys/**").authenticated()//表示以外的访问都需要登录
                 .and()
@@ -98,7 +102,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                     @Override
                     public void commence(HttpServletRequest req, HttpServletResponse resp,
                                          AuthenticationException authException) throws IOException, ServletException {
-                        String ipAddress = getIPAddress(req);
+                        String ipAddress = RequestUtils.getIPAddress(req);
                         log.info(ipAddress + ":无权限访问了" + req.getRequestURI());
                         httpResponseHandle(resp,HttpStatus.UNAUTHORIZED.value(),new BaseResult<String>().fail("未登录或登录过期，请登录"));
                     }
@@ -111,6 +115,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                     public void onLogoutSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
                         String token = tokenUtils.getTokenByRequest(req);
                         securityUserDetailsService.userOutLogin(token);
+                        SecurityContextHolder.clearContext();
                         httpResponseHandle(resp,HttpStatus.OK.value(),new BaseResult<String>().success());
                     }
                 })
@@ -160,34 +165,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         resp.getWriter().flush();
     }
 
-    private  String getIPAddress(HttpServletRequest request) {
-        String ip = null;
-        //X-Forwarded-For：Squid 服务代理
-        String ipAddresses = request.getHeader("X-Forwarded-For");
-        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
-            //Proxy-Client-IP：apache 服务代理
-            ipAddresses = request.getHeader("Proxy-Client-IP");
-        }
-        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
-            //WL-Proxy-Client-IP：weblogic 服务代理
-            ipAddresses = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
-            //HTTP_CLIENT_IP：有些代理服务器
-            ipAddresses = request.getHeader("HTTP_CLIENT_IP");
-        }
-        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
-            //X-Real-IP：nginx服务代理
-            ipAddresses = request.getHeader("X-Real-IP");
-        }
-        //有些网络通过多层代理，那么获取到的ip就会有多个，一般都是通过逗号（,）分割开来，并且第一个ip为客户端的真实IP
-        if (ipAddresses != null && ipAddresses.length() != 0) {
-            ip = ipAddresses.split(",")[0];
-        }
-        //还是不能获取到，最后再通过request.getRemoteAddr();获取
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
-            ip = request.getRemoteAddr();
-        }
-        return ip;
-    }
 }

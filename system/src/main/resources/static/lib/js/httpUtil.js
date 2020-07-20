@@ -117,16 +117,21 @@ var HTTP ={
 		}
 	},
 	SET_ACCESSTOKEN : function (accessJson) {
-		let tokenJSON = $.parseJSON(accessJson);
+		let tokenJSON = accessJson;
 		localStorage.setItem("accessToken", tokenJSON);
 		localStorage.setItem("token", tokenJSON.token);
 	}
 }
 
-function getAccessToken(){
-	let accessJson = localStorage.getItem("token")
+function getAccessToken(key){
+	let accessJson;
+	if(key == 'token'){
+		accessJson = localStorage.getItem("token")
+	}else if(key == 'authAccess'){
+		accessJson = localStorage.getItem("accessToken")
+	}
 	if(accessJson){
-		return $.parseJSON(accessJson);
+		return accessJson;
 	}else{
 		return;
 	}

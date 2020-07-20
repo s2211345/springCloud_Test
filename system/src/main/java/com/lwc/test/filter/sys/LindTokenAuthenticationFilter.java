@@ -4,6 +4,7 @@ import com.lwc.test.service.sys.SysUserService;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
 import com.lwc.test.utils.DateUtils;
 import com.lwc.test.utils.ReflectUtils;
+import com.lwc.test.utils.RequestUtils;
 import com.lwc.test.utils.SecurityTokenUtils;
 import com.lwc.test.view.sys.request.SysUserReqVO;
 import com.lwc.test.view.sys.response.SysUserRespVO;
@@ -45,7 +46,8 @@ public class LindTokenAuthenticationFilter extends OncePerRequestFilter {
   private SecurityTokenUtils securityTokenUtils;
 
   /**
-   * 如果带有Authorization，
+   * 如果带有Authorization Token参数，验证是否在系统内没有认证，没有则根据Token信息自动登录
+   * 后端存放页面使用SecurityContextHolder.getContext().getAuthentication()验证跳过， 前后端分离从缓存中读取认证信息
    * @param request
    * @param response
    * @param filterChain
@@ -83,7 +85,7 @@ public class LindTokenAuthenticationFilter extends OncePerRequestFilter {
                     request));
             //将authentication信息放入到上下文对象中
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info(userDetails.getUsername() + "使用TOKEN自动登录成功");
+            log.info("IP-" + RequestUtils.getIPAddress(request) + "----" + userDetails.getUsername() + "使用TOKEN请求" + request.getRequestURI() +"自动登录成功");
           }
         }
       }

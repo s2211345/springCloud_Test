@@ -61,6 +61,7 @@ public class SysUserController extends BaseController {
         if(StringUtils.isBlank(oldToken)){
             return result.fail("请传入旧token");
         }
+        oldToken = securityTokenUtils.formatTokenDelBearer(oldToken);
         if(securityTokenUtils.checkBlacklist(oldToken)){
             return result.fail("无效token，请检查");
         }

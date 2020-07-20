@@ -50,6 +50,9 @@ public class SecurityTokenUtils {
         if (StringUtils.isEmpty(token)) {
             token = request.getHeader(TOKENHEADER);
         }
+        if(StringUtils.isNotBlank(token)){
+            token = formatTokenDelBearer(token);
+        }
         return token;
     }
 
@@ -88,7 +91,6 @@ public class SecurityTokenUtils {
      * @param userDetails 从数据库中查询出来的用户信息
      */
     public boolean validateToken(String token, SysUserRespVO userDetails) {
-        token = formatTokenDelBearer(token);
         Claims claims = getClaimsFromToken(token);
         return claims.getSubject().equals(userDetails.getUsername()) && !isTokenExpired(claims);
     }
@@ -101,9 +103,8 @@ public class SecurityTokenUtils {
      * @param oldToken 带tokenHead的token
      */
     public AccessToken refreshToken(String oldToken) {
-        String token = formatTokenDelBearer(oldToken);
         // token反解析
-        Claims claims = getClaimsFromToken(token);
+        Claims claims = getClaimsFromToken(oldToken);
         //同步问题检测
         if (checkBlacklist(oldToken)) {
             //如果token在还未过去1个小时，返回原token，不需刷新
@@ -141,7 +142,6 @@ public class SecurityTokenUtils {
      * 从token中拿到负载信息
      */
     private Claims getClaimsFromToken(String token) {
-        token = formatTokenDelBearer(token);
         Claims claims = null;
         try {
             claims = Jwts.parser()
@@ -158,7 +158,6 @@ public class SecurityTokenUtils {
      * 从token中获取主题
      */
     public String getSubjectFromToken(String token) {
-        token = formatTokenDelBearer(token);
         Claims claims = getClaimsFromToken(token);
         if (claims != null) {
             return claims.getSubject();
@@ -179,7 +178,6 @@ public class SecurityTokenUtils {
      * @param token
      */
     public void addTokenBlacklist(String token){
-        token = formatTokenDelBearer(token);
         redisTemplate.boundValueOps(BLACKLIST+token).set("",jwtProperties.getExpirationTime(), TimeUnit.SECONDS);
     }
 
@@ -188,7 +186,6 @@ public class SecurityTokenUtils {
      * @param token
      */
     public Boolean checkBlacklist(String token){
-        token = formatTokenDelBearer(token);
         if(redisTemplate.hasKey(BLACKLIST+token)){
             return true;
         }else{
@@ -201,7 +198,6 @@ public class SecurityTokenUtils {
      * @param user
      */
     public void setCacheUserByToken(UserDetails user,String token){
-        token = formatTokenDelBearer(token);
         redisTemplate.boundValueOps(USER_TOKEN + token).set(user,jwtProperties.getExpirationTime(), TimeUnit.SECONDS);
     }
 
@@ -211,8 +207,16 @@ public class SecurityTokenUtils {
      * @return
      */
     public UserDetails getCacheUserByToken(String token){
-        token = formatTokenDelBearer(token);
         return (UserDetails)redisTemplate.opsForValue().get(USER_TOKEN + token);
+    }
+
+    /**
+     * 从缓存中删除Token
+     * @param token
+     * @return
+     */
+    public void delCacheUserByToken(String token){
+        redisTemplate.delete(USER_TOKEN + token);
     }
 
     /**
