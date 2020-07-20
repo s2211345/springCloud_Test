@@ -46,6 +46,7 @@ public class LindTokenAuthenticationFilter extends OncePerRequestFilter {
   private SecurityTokenUtils securityTokenUtils;
 
   /**
+   * 加入Token，刷新认证信息和前后端分离情况认证处理
    * 如果带有Authorization Token参数，验证是否在系统内没有认证，没有则根据Token信息自动登录
    * 后端存放页面使用SecurityContextHolder.getContext().getAuthentication()验证跳过， 前后端分离从缓存中读取认证信息
    * @param request
