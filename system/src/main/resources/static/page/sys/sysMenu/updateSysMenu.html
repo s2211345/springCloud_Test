@@ -156,9 +156,8 @@
 			}
 			$.ajax({
 				type : 'get',
-				url : '/sysmenu/' + id,
+				url : '/admin/sysmenu/' + id,
 				contentType: "application/json; charset=utf-8",
-				headers: vm.token,
 				async : false,
 				success : function(data) {
 					if(data.code == '200'){

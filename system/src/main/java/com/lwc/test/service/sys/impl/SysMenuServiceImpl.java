@@ -1,6 +1,7 @@
 package com.lwc.test.service.sys.impl;
 
 import com.lwc.test.dao.base.BaseDao;
+import com.lwc.test.dao.sys.SysMenuDao;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +13,21 @@ import com.lwc.test.view.sys.response.SysMenuRespVO;
 import com.lwc.test.model.sys.SysMenu;
 import com.lwc.test.service.sys.SysMenuService;
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @Service("sysMenuService")
 @Slf4j
 public class SysMenuServiceImpl extends BaseServiceImpl<SysMenu,SysMenuReqVO, SysMenuRespVO> implements SysMenuService {
+
+	@Override
+	public List<SysMenuRespVO> queryListByUserId(Integer userId) {
+		return getDao().queryListByUserId(userId);
+	}
+
+	private SysMenuDao getDao(){
+		return (SysMenuDao) this.dao;
+	}
 
 	@Override
 	@Resource(name = "sysMenuDao")

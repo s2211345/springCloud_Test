@@ -9,6 +9,7 @@ import com.lwc.test.utils.SecurityTokenUtils;
 import com.lwc.test.view.base.response.BaseResult;
 import com.lwc.test.view.sys.response.SysUserRespVO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -66,7 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 //                .anyRequest().authenticated()//表示以外的访问都需要登录
-                .antMatchers("/admin/**","/index.html","/pages/sys/**").authenticated()//表示以外的访问都需要登录
+                .antMatchers("/admin/**","/index.html","/page/**","/pages/sys/**").authenticated()//表示以外的访问都需要登录
                 .and()
                 .formLogin()
                 //定义登录页面，未登录时，访问一个需要登录之后才能访问的接口，会自动跳转到该页面
@@ -103,18 +104,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                     public void commence(HttpServletRequest req, HttpServletResponse resp,
                                          AuthenticationException authException) throws IOException, ServletException {
                         String ipAddress = RequestUtils.getIPAddress(req);
-                        log.info(ipAddress + ":无权限访问了" + req.getRequestURI());
+                        String requestURI = req.getRequestURI();
+                        log.info(ipAddress + ":无权限访问了" + requestURI);
+                        if(-1 != requestURI.indexOf(".html")){
+                            resp.setStatus(HttpStatus.MOVED_PERMANENTLY.value());
+                            resp.sendRedirect("/admin/sysUser/login");
+                        }
                         httpResponseHandle(resp,HttpStatus.UNAUTHORIZED.value(),new BaseResult<String>().fail("未登录或登录过期，请登录"));
                     }
                      })
                 .and()
                 .logout()   //登出部分
-                .logoutUrl("/logout")
+                .logoutUrl("/admin/logout")
                 .logoutSuccessHandler(new LogoutSuccessHandler() {
                     @Override
                     public void onLogoutSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
+                        String ipAddress = RequestUtils.getIPAddress(req);
                         String token = tokenUtils.getTokenByRequest(req);
                         securityUserDetailsService.userOutLogin(token);
+                        if(StringUtils.isNotBlank(token)){
+                            log.info(ipAddress + ":" + tokenUtils.getSubjectFromToken(token) + "登出");
+                        }else{
+                            log.info(ipAddress + ":" + authentication.getName() + "登出");
+                        }
                         SecurityContextHolder.clearContext();
                         httpResponseHandle(resp,HttpStatus.OK.value(),new BaseResult<String>().success());
                     }
@@ -142,6 +154,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         web.ignoring().antMatchers("/statics/img/**");
         web.ignoring().antMatchers("/login.html");
         web.ignoring().antMatchers("/favicon.ico");
+        web.ignoring().antMatchers("/pages/login.html");
         web.ignoring().antMatchers("/404.html");
         web.ignoring().antMatchers("/500.html");
     }

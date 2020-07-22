@@ -42,9 +42,7 @@ public class ${className}Controller{
 		SysResult<List<${className}RespVO>> result = new SysResult<>();
 		List<${className}RespVO> ${classname}RespVOS = ${classname}Service.listByReq(${classname}ReqVO);
 		int count = ${classname}Service.countByReq(${classname}ReqVO);
-		result.setData(${classname}RespVOS);
-		result.setCount(count);
-		return result;
+		return result.successOK(sysMenuRespVOS,count);
 	}
 
 	@GetMapping("/{id}")

@@ -1,155 +1,209 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-	<title>菜单表列表</title>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="/statics/css/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/statics/css/treetable/jquery.treetable.css" />
+	<link rel="stylesheet" href="/statics/css/treetable/jquery.treetable.theme.default.css" />
 	<link rel="stylesheet" href="/statics/js/layui/css/layui.css" media="all" />
-	<style>
-		body{margin: 10px;}
-		.demo-carousel{height: 200px; line-height: 200px; text-align: center;}
-	</style>
 </head>
 <body>
-<div class="testTableSearch">
-	姓名：
-	<div class="layui-inline">
-		<input class="layui-input" name="serchName" id="serchName" autocomplete="off">
-	</div>
-	<div class="layui-inline">
-		<button class="layui-btn" data-type="reload" id="searchBtn">搜索</button>
-	</div>
-	<div class="layui-layout-right">
-		<button class="layui-btn layui-btn-sm" id="btAdd">
-			<i class="layui-icon">&#xe608;</i> 新增
-		</button>
+<div>
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		<header style="height: 100%">
+			<div align="left">
+				<table style="width: 100%">
+					<tr>
+						<td>
+						</td>
+						<td align="right">
+							<button class="layui-btn layui-btn-sm" onclick="addMenu()" permission="sys:menu:add">
+								<i class="layui-icon">&#xe608;</i> 添加
+							</button>
+							<button class="layui-btn layui-btn-sm" onclick="location.reload();">刷新
+							</button>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</header>
+
+		<div>
+			<div class="widget-body no-padding">
+				<table id="dt-table" class="table table-striped table-bordered table-hover" style="width:100%">
+					<tr>
+						<th width="20%">名称</th>
+						<th width="5%">id</th>
+						<th>href</th>
+						<th width="15%">permission</th>
+						<th width="5%">sort</th>
+						<th>操作</th>
+					</tr>
+				</table>
+			</div>
+		</div>
 	</div>
 </div>
-
-<table id="testTable" lay-filter="testFilter"></table>
-
-<script type="text/html" id="testBar">
-	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
-</script>
 
 </body>
 </html>
 
-<script  src="../../layui/layui.js"></script>
+<script type="text/javascript" src="/statics/js/layui/layui.js"></script>
 <script type="text/javascript" src="/statics/js/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="/statics/js/treetable/jquery.treetable.js"></script>
+<script type="text/javascript" src="/statics/js/httpUtil.js"></script>
 <script type="text/javascript" src="/statics/js/layerView.js"></script>
 <script type="text/javascript">
-
-	layui.use(['laydate', 'laypage', 'layer', 'table', 'carousel', 'upload', 'element', 'slider'], function(){
-		var $= layui.jquery;
-		var laydate = layui.laydate //日期
-				,laypage = layui.laypage //分页
-				,layer = layui.layer //弹层
-				,table = layui.table //表格
-				,element = layui.element //元素操作
-				,form = layui.form       //form表单元素
-
-		//执行一个 table 实例
-		table.render({
-			elem: '#testTable'
-			,height: '700'
-			,id : 'tableAll'
-			,url: '/sysmenu/getList' //数据接口
-			,title: '菜单表列表'
-			,headers : {'token' : localStorage.getItem('token')}  //登录标识
-			,page: true //开启分页
-			,method: 'post'
-			,contentType: 'application/json'
-			,loading:true
-			,where : {                    //额外请求参数
-				serchName : ''
-			}
-			,limit: 10                  //每页展示条数初始值
-			,cols: [[ //表头
-									{field: 'id', title: '', width:150,totalRow: true},
-									{field: 'parentId', title: '父id', width:150,totalRow: true},
-									{field: 'name', title: '名称', width:150,totalRow: true},
-									{field: 'ico', title: '图标', width:150,totalRow: true},
-									{field: 'href', title: '链接', width:150,totalRow: true},
-									{field: 'type', title: '类型 1 菜单 2按钮', width:150,totalRow: true},
-									{field: 'permission', title: '权限', width:150,totalRow: true},
-									{field: 'sort', title: '排序', width:150,totalRow: true},
-									{field: 'createTime', title: '创建时间', width:150,totalRow: true},
-									{field: 'updateTime', title: '更新时间', width:150,totalRow: true},
-									{field: 'createUser', title: '创建用户', width:150,totalRow: true},
-								{fixed: 'right',title: '操作', width:100, align:'center', toolbar: '#testBar'}
-			]]
-		});
-
-		//搜索框点击操作
-		$('#searchBtn').on('click', function() {
-			tableReload();
-			return false;
-		});
-		//行工具栏监听事件
-		table.on('tool(testFilter)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
-			var data = obj.data //获得当前行数据
-					,layEvent = obj.event; //获得 lay-event 对应的值
-			var id = data.id;
-			if(layEvent === 'detail'){
-				Detail(id);
+	var pers = function() {
+		var pers = [];
+		HTTP.GET({
+			url:'/admin/sysmenu/owns',
+			okCall:function(data){
+				pers = data;
+				$("[permission]").each(function() {
+					var per = $(this).attr("permission");
+					if ($.inArray(per, data) < 0) {
+						$(this).hide();
+					}
+				});
 			}
 		});
+		return pers;
+	};
+	initMenuList();
 
-		//菜单表详情
-		function Detail(id){
-			//修改
-			var url = '/pages/sysMenu/updateSysMenu.html?id='+id;
-			var postUrl = '/sysmenu/update';
-			var title = "更新 | 菜单表";
-			LAYER_VIEW.submitBSForm({
-				name: "file_form",
-				url: url,
-				anim:7,
-				offset: 'rb',
-				area:['1200px','100%'],
-				headers:{'token' : localStorage.getItem('token')},
-				postUrl: postUrl,
-				title: title,
-				success_callback:function(data){
-					setTimeout(function(){
-						tableReload();
-					},1000)
-				}
-			});
-		}
-		//表格刷新
-		function tableReload(){
-			table.reload('tableAll', {
-				method : 'post',
-				where : {
-					serchName : $('#serchName').val()
-				}
-			});
-		}
+	function initMenuList(){
+		HTTP.GET({
+			url:'/admin/sysmenu/getList',
+			okCall:function(data){
+				var length = data.length;
+				for(var i=0; i<length; i++){
+					var d = data[i];
+					var tr = "<tr data-tt-id='" + d['id'] + "' data-tt-parent-id='" + d['parentId'] + "'>";
+					var td1 = "<td>" + d['name'] +"</td>";
+					tr += td1;
+					var id = "<td>" + d['id'] +"</td>";
+					tr += id;
+					var href = "";
+					if(d['href'] != null){
+						href = d['href'];
+					}
+					var td2 = "<td>" + href +"</td>";
+					tr += td2;
 
-		$("#btAdd").on('click',function(){
-			//修改
-			var url = '/pages/sysMenu/addSysMenu.html';
-			var postUrl = '/sysmenu/save';
-			var title = "新增 | 菜单表";
-			LAYER_VIEW.submitBSForm({
-				name: "file_form",
-				url: url,
-				anim:7,
-				offset: 'rb',
-				area:['1000px','100%'],
-				headers:{'token' : localStorage.getItem('token')},
-				postUrl: postUrl,
-				title: title,
-				success_callback:function(data){
-					setTimeout(function(){
-						tableReload();
-					},1000)
+					var permission = d['permission'];
+					if(permission == null){
+						permission = "";
+					}
+
+					var td3 = "<td>" + permission +"</td>";
+					tr += td3;
+
+					var sort = d['sort'];
+					if(sort == 0){
+						sort = "";
+					}
+
+					var td4 = "<td>" + sort +"</td>";
+					tr += td4;
+
+					var id = d['id'];
+					var href = "updateMenu.html?id=" + id;
+					var edit = buttonEdit(id);
+					var del = buttonDel(id);
+					tr += "<td>"+edit + del+"</td>";
+					tr += "</tr>"
+					$("#dt-table").append(tr);
 				}
-			});
+			}
+		});
+	}
+
+	function addMenu(){
+		//修改
+		var url = '/pages/sys/sysMenu/addSysMenu.html';
+		var postUrl = '/admin/sysmenu/save';
+		var title = "添加 | 菜单";
+		LAYER_VIEW.submitBSForm({
+			name: "file_form",
+			url: url,
+			anim:7,
+			offset: 'rb',
+			area:['1200px','100%'],
+			postUrl: postUrl,
+			title: title,
+			success_callback:function(data){
+				setTimeout(function(){
+					tableReload();
+				},1000)
+			}
+		});
+	}
+
+	function editMenu(id){
+		//修改
+		var url = '/pages/sys/sysMenu/updateSysMenu.html?id='+id;
+		var postUrl = '/admin/sysmenu/update';
+		var title = "更新 | 菜单";
+		LAYER_VIEW.submitBSForm({
+			name: "file_form",
+			url: url,
+			anim:7,
+			offset: 'rb',
+			area:['1200px','100%'],
+			postUrl: postUrl,
+			title: title,
+			success_callback:function(data){
+				setTimeout(function(){
+					tableReload();
+				},1000)
+			}
+		});
+	}
+	function delMenu(id){
+		let url = '/admin/sysmenu/delete/' + id;
+		LAYER_VIEW.confirmPost({
+			url:url,
+			msg:'请确认是否执行此操作',
+			title:'删除菜单',
+			callback:function(){
+				setTimeout(function(){
+					location.reload();
+				},1000)
+			}
 		})
+	}
 
+	function buttonEdit(id){
+		var btn = $("<button class='layui-btn layui-btn-xs' title='编辑' onclick='editMenu("+ id +")'><i class='layui-icon'>&#xe642;</i>编辑</button>");
+		return btn.prop("outerHTML");
+	}
+
+	function buttonDel(id){
+		var btn = $("<button class='layui-btn layui-btn-xs' title='删除' onclick='delMenu("+ id +")'><i class='layui-icon'>&#xe640;</i>删除</button>");
+		return btn.prop("outerHTML");
+	}
+
+	layui.use('layer', function(){
+		var layer = layui.layer;
 	});
 
+	var option = {
+		expandable : true,
+		clickableNodeNames : true,
+		onNodeExpand : function() {
+			var d = this;
+			console.log(d['id']);
+			console.log(d['parentId']);
+		},
+		onNodeCollapse : function() {
+			var d = this;
+			console.log(d['id'] + "Collapse");
+			console.log(d['parentId'] + "Collapse");
+		}
+
+	};
+
+	$("#dt-table").treetable(option);
 </script>

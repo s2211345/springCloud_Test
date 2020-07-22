@@ -124,33 +124,25 @@
 	$(document).on('click','.userinfo-close',function(){
 		$(this).hide().siblings('input').val('');
 	})
-	var token = localStorage.getItem("token");
-	if (token) {
-		$.ajax({
-			type: 'get',
-			contentType: "application/json; charset=utf-8",
-			url: '/admin/sysUser/getCurrentUser',
-			headers:{
-				tokenHeader: token
-			},
-			success: function (data) {
-				console.log(data)
-				if(data.code == '200'){
-					location.href = '/index.html';
-				}
-			},
-			error: function (xhr, textStatus, errorThrown) {
-				console.log(xhr)
-				var msg = xhr.responseText;
-				var response = JSON.parse(msg);
-				var code = response.code;
-				var message = response.message;
-				if (code == 401) {
-					localStorage.removeItem("token");
-				}
+	HTTP.GET({
+		url:'/admin/sysUser/getCurrentUser',
+		okCall:function (data) {
+			console.log(data)
+			if(data.code == '200'){
+				location.href = '/index.html';
 			}
-		});
-	}
+		},
+		errorCall:function (xhr, textStatus, errorThrown) {
+			console.log(xhr)
+			var msg = xhr.responseText;
+			var response = JSON.parse(msg);
+			var code = response.code;
+			var message = response.message;
+			if (code == 401) {
+				localStorage.removeItem("token");
+			}
+		}
+	});
 
 	function login(obj) {
 		$(obj).attr("disabled", true);
@@ -174,12 +166,12 @@
 						}
 					}
 					HTTP.SET_ACCESSTOKEN(data.data)
+					let authAccess = getAccessToken('authAccess')
 					location.href = '/index.html';
 				},
 				error: function (xhr, textStatus, errorThrown) {
 					if(xhr.status == 500){
-						$("#info").html("网络错误，请刷新重试");
-						console.log(xhr.responseJSON.error);
+						$("#info").html(xhr.responseJSON.msg);
 					}else{
 						$("#info").html(xhr.responseText);
 					}

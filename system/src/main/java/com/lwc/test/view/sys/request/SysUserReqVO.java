@@ -52,6 +52,15 @@ public class SysUserReqVO extends BaseRequestView implements UserDetails {
 	// 创建用户
 	private String createUser;
 
+	// 排序字段
+	private String sbyField;
+	//排序方式
+	private String sby;
+	//当前页码
+	private int page = 1;
+	//当页展示多少条数据
+	private int limit = 10;
+
 	//用户Token
 	private String token;
 

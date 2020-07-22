@@ -2,14 +2,18 @@ package com.lwc.test.view.sys.response;
 
 import com.lwc.test.enums.base.BaseStatusCodeEnum;
 import com.lwc.test.model.base.BaseModel;
+import com.lwc.test.model.sys.SysMenu;
 import com.lwc.test.view.base.response.BaseResponseView;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -58,7 +62,7 @@ public class SysUserRespVO extends BaseResponseView implements UserDetails {
 	private Long loginTime;
 	/** 过期时间戳 */
 	private Long expireTime;
-	private List<GrantedAuthority> authoritys;
+	private List<SysMenuRespVO> authoritys;
 
 	@Override
 	public String getUsername() {
@@ -87,6 +91,7 @@ public class SysUserRespVO extends BaseResponseView implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.authoritys;
+		return  authoritys.parallelStream().filter(p -> !StringUtils.isEmpty(p.getPermission()))
+				.map(p -> new SimpleGrantedAuthority(p.getPermission())).collect(Collectors.toSet());
 	}
 }

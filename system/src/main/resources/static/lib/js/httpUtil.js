@@ -4,22 +4,24 @@ var HTTP ={
 		var contentType = options.contentType || 'application/json; charset=utf-8';
 		var okCall = options.okCall || {};
 		var errorCall = options.errorCall || null;
-		var data = options.data || {};
-		var headers = options.headers || {
-			'Authorization': accessToken.token
-		};
+		var data = options.data || '';
+		var async = options.async || false;
 
-		let accessToken = getAccessToken();
-		if(accessToken){
-			return;
+		let authAccess = getAccessToken('authAccess');
+		if(!authAccess){
+			authAccess.token = ''
 		}
+		var headers = options.headers || {
+			'Authorization': authAccess.token
+		};
 		//过去1个小时刷新一次token
-		if(judgeDate(accessToken.expirationTime) <= 3600000){ //3600000毫秒 1小时
-			let refreshTokenUrl = '/admin/sysUser/refreshToken?token=' + accessToken.token;
+		if(judgeDate(authAccess.expirationTime) <= 3600000){ //3600000毫秒 1小时
+			let refreshTokenUrl = '/admin/sysUser/refreshToken?token=' + authAccess.token;
 			$.ajax({
 				async:false,  //刷新token使用同步
 				type : 'get',
 				url : refreshTokenUrl,
+				headers:headers,
 				contentType: contentType,
 				success : function(result) {
 					console.log(result)
@@ -37,6 +39,7 @@ var HTTP ={
 			});
 		}
 		$.ajax({
+			async:async,
 			type : 'get',
 			url : url,
 			data:JSON.stringify(data),
@@ -45,9 +48,9 @@ var HTTP ={
 			success : function(result) {
 				okCall(result);
 			},
-			error:function(result){
+			error:function(xhr, textStatus, errorThrown){
 				if(errorCall){
-					errorCall(result)
+					errorCall(xhr, textStatus, errorThrown)
 				}else{
 					top.layer.msg("执行失败",{icon:2});
 				}
@@ -59,22 +62,22 @@ var HTTP ={
 		var contentType = options.contentType || 'application/json; charset=utf-8';
 		var okCall = options.okCall || {};
 		var data = options.data || {};
-		var headers = options.headers || {
-			'Authorization': accessToken.token
-		};
-
-		let accessToken = getAccessToken();
-		if(accessToken){
-			return;
+		let authAccess = getAccessToken('authAccess');
+		if(!authAccess){
+			authAccess.token = ''
 		}
+		var headers = options.headers || {
+			'Authorization': authAccess.token
+		};
 		//过去1个小时刷新一次token
-		if(judgeDate(accessToken.expirationTime) <= 3600000){ //3600000毫秒 1小时
-			let refreshTokenUrl = '/admin/sysUser/refreshToken?token=' + accessToken.token;
+		if(judgeDate(authAccess.expirationTime) <= 3600000){ //3600000毫秒 1小时
+			let refreshTokenUrl = '/admin/sysUser/refreshToken?token=' + authAccess.token;
 			$.ajax({
 				async:false,  //刷新token使用同步
 				type : 'get',
 				url : refreshTokenUrl,
 				contentType: contentType,
+				headers:headers,
 				success : function(result) {
 					console.log(result)
 					if(result.code == '202'){
@@ -88,9 +91,9 @@ var HTTP ={
 						}
 					}
 				},
-				error:function(result){
+				error:function(xhr, textStatus, errorThrown){
 					if(errorCall){
-						errorCall(result)
+						errorCall(xhr, textStatus, errorThrown)
 					}else{
 						top.layer.msg("执行失败",{icon:2});
 					}
@@ -109,17 +112,23 @@ var HTTP ={
 		});
 	},
 	GET_TOKEN:function() {
-		let accessJson = getAccessToken();
-		if(accessJson){
-			return accessJson.token;
+		let token = getAccessToken('token');
+		if(token){
+			return token;
 		}else{
 			return null;
 		}
 	},
 	SET_ACCESSTOKEN : function (accessJson) {
 		let tokenJSON = accessJson;
-		localStorage.setItem("accessToken", tokenJSON);
-		localStorage.setItem("token", tokenJSON.token);
+		console.log(tokenJSON)
+		localStorage.setItem('accessToken', JSON.stringify(tokenJSON));
+		let temp = localStorage.getItem('accessToken');
+		localStorage.setItem('token', tokenJSON.token);
+	},
+	DEL_ACCESSTOKEN : function () {
+		localStorage.removeItem('accessToken');
+		localStorage.removeItem('token');
 	}
 }
 
@@ -128,7 +137,8 @@ function getAccessToken(key){
 	if(key == 'token'){
 		accessJson = localStorage.getItem("token")
 	}else if(key == 'authAccess'){
-		accessJson = localStorage.getItem("accessToken")
+		let temp = localStorage.getItem("accessToken")
+		accessJson = JSON.parse(temp);
 	}
 	if(accessJson){
 		return accessJson;

@@ -86,9 +86,13 @@ public class LindTokenAuthenticationFilter extends OncePerRequestFilter {
                     request));
             //将authentication信息放入到上下文对象中
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("IP-" + RequestUtils.getIPAddress(request) + "----" + userDetails.getUsername() + "使用TOKEN请求" + request.getRequestURI() +"自动登录成功");
+            log.info("IP-" + RequestUtils.getIPAddress(request) + "；用户：" + userDetails.getUsername() + "使用TOKEN请求" + request.getRequestURI());
           }
         }
+      }else{
+        String ipAddress = RequestUtils.getIPAddress(request);
+        String requestURI = request.getRequestURI();
+         log.info(ipAddress + "-" +userName + "使用过期Token访问" + "-" + requestURI);
       }
     }
 

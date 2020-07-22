@@ -88,9 +88,8 @@
 			}
 			$.ajax({
 				type : 'get',
-				url : '/${pathName}/' + id,
+				url : '/${project}/${pathName}/' + id,
 				contentType: "application/json; charset=utf-8",
-				headers: vm.token,
 				async : false,
 				success : function(data) {
 					if(data.code == '200'){

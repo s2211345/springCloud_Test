@@ -51,6 +51,14 @@
 		where m.id = #{value}
 	</select>
 
+	<select id="queryListByUserId" resultType="com.lwc.test.view.sys.response.SysMenuRespVO">
+		select distinct
+		<include refid="Base_Column_List" />
+		from sys_menu m inner join sys_role_menu rm on m.id = rm.menu_id inner join sys_user_role ur on ur.role_id = rm.role_id
+		where ur.user_id = #{userId}
+		order by m.sort
+	</select>
+
 	<select id="queryByReq" resultType="com.lwc.test.view.sys.response.SysMenuRespVO">
 		select
 		<include refid="Base_Column_List" />
@@ -69,11 +77,11 @@
 			<include refid="where" />
 		</where>
       <choose>
-        <when test="sidx != null and sidx.trim() != ''">
-            order by ${sidx} ${order}
+        <when test="sbyField != null and sbyField.trim() != ''">
+            order by ${sbyField} ${sby}
         </when>
 				<otherwise>
-            order by m.createTime desc
+            order by m.create_time desc
 				</otherwise>
       </choose>
 		<if test="page != null and page != null">

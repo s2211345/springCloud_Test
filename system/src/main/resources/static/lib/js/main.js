@@ -1,47 +1,41 @@
 initMenu();
 function initMenu(){
 	HTTP.GET({
-		url:'/admin/sysmenu/current'
+		url:'/admin/sysmenu/current',
+		okCall:function(data){
+			if(!$.isArray(data)){
+				location.href='/login.html';
+				return;
+			}
+			var menu = $("#menu");
+			$.each(data, function(i,item){
+				var a = $("<a href='javascript:;'></a>");
+
+				var css = item.css;
+				if(css!=null && css!=""){
+					a.append("<i aria-hidden='true' class='fa " + css +"'></i>");
+				}
+				a.append("<cite>"+item.name+"</cite>");
+				a.attr("lay-id", item.id);
+
+				var href = item.href;
+				if(href != null && href != ""){
+					a.attr("data-url", href);
+				}
+
+				var li = $("<li class='layui-nav-item'></li>");
+				if (i == 0) {
+					li.addClass("layui-nav-itemed");
+				}
+				li.append(a);
+				menu.append(li);
+
+				//多级菜单
+				setChild(li, item.child)
+
+			});
+		}
 	});
-
-	 $.ajax({  
-	     url:"/permissions/current",  
-	     type:"get",  
-	     async:false,
-	     success:function(data){
-	    	 if(!$.isArray(data)){
-	    		 location.href='/login.html';
-	    		 return;
-	    	 }
-	    	 var menu = $("#menu");
-	    	 $.each(data, function(i,item){
-	             var a = $("<a href='javascript:;'></a>");
-	             
-	             var css = item.css;
-	             if(css!=null && css!=""){
-	            	 a.append("<i aria-hidden='true' class='fa " + css +"'></i>");
-	             }
-	             a.append("<cite>"+item.name+"</cite>");
-	             a.attr("lay-id", item.id);
-	             
-	             var href = item.href;
-	             if(href != null && href != ""){
-	                a.attr("data-url", href);
-	             }
-	             
-	             var li = $("<li class='layui-nav-item'></li>");
-	             if (i == 0) {
-	            	 li.addClass("layui-nav-itemed");
-	             }
-	             li.append(a);
-                 menu.append(li);
-	             
-	             //多级菜单
-	             setChild(li, item.child)
-
-	        });
-	     }
-	 });
 }
 
 function setChild(parentElement, child){
@@ -73,7 +67,7 @@ function setChild(parentElement, child){
 }
 
 // 登陆用户头像昵称
-showLoginInfo();
+/*showLoginInfo();
 function showLoginInfo(){
 	$.ajax({
 		type : 'get',
@@ -122,13 +116,14 @@ function showUnreadNotice(){
 		}
 	});
 }
+*/
 
 function logout(){
-	$.ajax({
-		type : 'get',
-		url : '/logout',
-		success : function(data) {
-			localStorage.removeItem("token");
+	HTTP.GET({
+		url: '/admin/logout',
+		okCall: function (data) {
+			console.log(data)
+			HTTP.DEL_ACCESSTOKEN();
 			location.href='/login.html';
 		}
 	});

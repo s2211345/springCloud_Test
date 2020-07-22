@@ -1,6 +1,8 @@
 package com.lwc.test.model.sys;
 
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 import com.lwc.test.model.base.BaseModel;
 

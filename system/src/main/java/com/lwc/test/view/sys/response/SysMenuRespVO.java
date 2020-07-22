@@ -1,6 +1,9 @@
 package com.lwc.test.view.sys.response;
 
 import java.util.Date;
+import java.util.List;
+
+import com.lwc.test.model.sys.SysMenu;
 import lombok.Data;
 import com.lwc.test.view.base.response.BaseResponseView;
 
@@ -38,4 +41,7 @@ public class SysMenuRespVO extends BaseResponseView{
 	private Date updateTime;
 	// 创建用户
 	private Integer createUser;
+
+	private List<SysMenuRespVO> child;
+
 }

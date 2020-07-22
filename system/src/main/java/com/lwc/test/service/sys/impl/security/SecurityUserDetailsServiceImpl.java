@@ -5,12 +5,15 @@ import com.lwc.test.enums.base.BaseStatusCodeEnum;
 import com.lwc.test.model.sys.SysLog;
 import com.lwc.test.model.sys.security.AccessToken;
 import com.lwc.test.service.sys.SysLogService;
+import com.lwc.test.service.sys.SysMenuService;
 import com.lwc.test.service.sys.SysUserService;
 import com.lwc.test.utils.AESUtils;
 import com.lwc.test.utils.DateUtils;
 import com.lwc.test.utils.SecurityTokenUtils;
 import com.lwc.test.view.sys.request.SysUserReqVO;
+import com.lwc.test.view.sys.response.SysMenuRespVO;
 import com.lwc.test.view.sys.response.SysUserRespVO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +30,13 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class SecurityUserDetailsServiceImpl implements UserDetailsService {
-    private static final Logger log = LoggerFactory.getLogger(SysLogController.class);
 
     @Autowired
     private HttpServletRequest request;
@@ -42,6 +46,8 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
     private SysLogService sysLogService;
     @Autowired
     private SecurityTokenUtils securityTokenUtils;
+    @Autowired
+    private SysMenuService sysMenuService;
     
     @Value("${token.expire.seconds}")
     private Integer expireSeconds;
@@ -71,13 +77,13 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
             String requestCaptcha = request.getParameter("code");
             String genCaptcha = (String) request.getSession().getAttribute("index_login_code");
             if (StringUtils.isBlank(requestCaptcha)) {
-                throw new AuthenticationServiceException("验证码不能为空!");
+                throw new AuthenticationServiceException("验证码不能为空");
             }
             if (StringUtils.isBlank(genCaptcha)) {
-                throw new AuthenticationServiceException("验证码已过期，请刷新验证码!");
+                throw new AuthenticationServiceException("验证码已过期，请刷新验证码");
             }
             if (!genCaptcha.toLowerCase().equals(requestCaptcha.toLowerCase())) {
-                throw new AuthenticationServiceException("验证码错误!");
+                throw new AuthenticationServiceException("验证码输入错误");
             }
         }
         SysUserReqVO queryParam = new SysUserReqVO();
@@ -90,6 +96,8 @@ public class SecurityUserDetailsServiceImpl implements UserDetailsService {
         } else if (BaseStatusCodeEnum.DELETE.getCode().equals(user.getStatus())) {
             throw new DisabledException("用户已作废");
         }
+        List<SysMenuRespVO> sysMenuRespVOS = sysMenuService.queryListByUserId(user.getId());
+        user.setAuthoritys(sysMenuRespVOS);
         return user;
     }
 

@@ -54,13 +54,23 @@
 			elem: '#testTable'
 			,height: '700'
 			,id : 'tableAll'
-			,url: '/sysuser/getList' //数据接口
+			,url: '/admin/sysuser/getList' //数据接口
 			,title: '用户表列表'
-			,headers : {'token' : localStorage.getItem('token')}  //登录标识
 			,page: true //开启分页
 			,method: 'post'
 			,contentType: 'application/json'
 			,loading:true
+			,response: {
+				statusCode: 200 //规定成功的状态码，默认：0
+			}
+			,parseData: function(res){ //res 即为原始返回的数据
+				return {
+					"code": res.code, //解析接口状态
+					"msg": res.msg, //解析提示文本
+					"count": res.count, //解析数据长度
+					"data": res.data //解析数据列表
+				};
+			}
 			,where : {                    //额外请求参数
 				serchName : ''
 			}
@@ -104,7 +114,7 @@
 		function Detail(id){
 			//修改
 			var url = '/pages/sysUser/updateSysUser.html?id='+id;
-			var postUrl = '/sysuser/update';
+			var postUrl = '/admin/sysuser/update';
 			var title = "更新 | 用户表";
 			LAYER_VIEW.submitBSForm({
 				name: "file_form",
@@ -112,7 +122,6 @@
 				anim:7,
 				offset: 'rb',
 				area:['1200px','100%'],
-				headers:{'token' : localStorage.getItem('token')},
 				postUrl: postUrl,
 				title: title,
 				success_callback:function(data){
@@ -135,7 +144,7 @@
 		$("#btAdd").on('click',function(){
 			//修改
 			var url = '/pages/sysUser/addSysUser.html';
-			var postUrl = '/sysuser/save';
+			var postUrl = '/admin/sysuser/save';
 			var title = "新增 | 用户表";
 			LAYER_VIEW.submitBSForm({
 				name: "file_form",
@@ -143,7 +152,6 @@
 				anim:7,
 				offset: 'rb',
 				area:['1000px','100%'],
-				headers:{'token' : localStorage.getItem('token')},
 				postUrl: postUrl,
 				title: title,
 				success_callback:function(data){
