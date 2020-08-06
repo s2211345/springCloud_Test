@@ -25,6 +25,11 @@ public class SysMenuServiceImpl extends BaseServiceImpl<SysMenu,SysMenuReqVO, Sy
 		return getDao().queryListByUserId(userId);
 	}
 
+	@Override
+	public List<SysMenuRespVO> listParents() {
+		return dao.listParents();
+	}
+
 	private SysMenuDao getDao(){
 		return (SysMenuDao) this.dao;
 	}

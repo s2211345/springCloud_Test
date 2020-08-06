@@ -3,10 +3,12 @@ package com.lwc.test.controller.sys;
 import com.google.common.collect.Lists;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
 import com.lwc.test.utils.SecurityTokenUtils;
+import com.lwc.test.view.base.response.BaseResult;
 import com.lwc.test.view.sys.response.SysUserRespVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
@@ -123,31 +125,46 @@ public class SysMenuController{
 		}
 	}
 
+	@GetMapping("/parents")
+	@ApiOperation(value = "一级菜单")
+	@PreAuthorize("hasAuthority('sys:menu:query')")
+	public List<SysMenuRespVO> parentMenu() {
+		List<SysMenuRespVO> parents = sysMenuService.listParents();
+
+		return parents;
+	}
+
+
 	//@todo 修改SysMenuResp
 	@GetMapping("/{id}")
 	@ApiOperation(value = "根据id获取")
-	public SysMenu get(@PathVariable Integer id) {
-		return sysMenuService.queryById(id);
+	public BaseResult<SysMenuRespVO> get(@PathVariable Integer id) {
+		BaseResult<SysMenuRespVO> result = new BaseResult<>();
+		SysMenuRespVO sysMenu = sysMenuService.queryById(id);
+		SysMenuRespVO sysMenuRespVO = new SysMenuRespVO();
+		BeanUtils.copyProperties(sysMenu,sysMenuRespVO);
+		return result.success(sysMenuRespVO);
 	}
 
 	@PostMapping("/save")
 	@ApiOperation(value = "保存")
-	public SysMenu save(@RequestBody SysMenu sysMenu){
+	public BaseResult save(@RequestBody SysMenu sysMenu){
 		sysMenuService.save(sysMenu);
-		return sysMenu;
+		return new BaseResult().success();
 	}
 
-	@PutMapping("/update")
+	@PostMapping("/update")
 	@ApiOperation(value = "修改")
-	public SysMenu update(@RequestBody SysMenu sysMenu) {
+	public BaseResult update(@RequestBody SysMenu sysMenu) {
 			sysMenuService.update(sysMenu);
-		return sysMenu;
+		return new BaseResult().success();
 	}
 
-	@DeleteMapping("/delete/{id}")
+	@PostMapping("/delete/{id}")
 	@ApiOperation(value = "删除")
-	public void delete(@PathVariable Integer id) {
+	public BaseResult delete(@PathVariable Integer id) {
 			sysMenuService.delete(id);
+		return new BaseResult().success();
 	}
 
 }

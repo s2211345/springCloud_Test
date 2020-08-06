@@ -1,8 +1,11 @@
 package com.lwc.test.controller.sys;
 
+import com.lwc.test.view.base.response.BaseResult;
+import com.lwc.test.view.sys.response.SysMenuRespVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
@@ -49,28 +52,33 @@ public class SysRoleController{
 
 	@GetMapping("/{id}")
 	@ApiOperation(value = "根据id获取")
-	public SysRole get(@PathVariable Integer id) {
-		return sysRoleService.queryById(id);
+	public BaseResult<SysRoleRespVO> get(@PathVariable Integer id) {
+		BaseResult<SysRoleRespVO> result = new BaseResult<>();
+		SysRoleRespVO roleRespVO = sysRoleService.queryById(id);
+		SysRoleRespVO resultData = new SysRoleRespVO();
+		BeanUtils.copyProperties(roleRespVO,resultData);
+		return result.success(resultData);
 	}
 
 	@PostMapping("/save")
 	@ApiOperation(value = "保存")
-	public SysRole save(@RequestBody SysRole sysRole){
+	public BaseResult save(@RequestBody SysRole sysRole){
 		sysRoleService.save(sysRole);
-		return sysRole;
+		return new BaseResult().success();
 	}
 
 	@PutMapping("/update")
 	@ApiOperation(value = "修改")
-	public SysRole update(@RequestBody SysRole sysRole) {
+	public BaseResult update(@RequestBody SysRole sysRole) {
 			sysRoleService.update(sysRole);
-		return sysRole;
+		return new BaseResult().success();
 	}
 
 	@DeleteMapping("/delete/{id}")
 	@ApiOperation(value = "删除")
-	public void delete(@PathVariable Integer id) {
+	public BaseResult delete(@PathVariable Integer id) {
 			sysRoleService.delete(id);
+			return new BaseResult().success();
 	}
 
 }

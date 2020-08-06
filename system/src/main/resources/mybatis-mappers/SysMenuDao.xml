@@ -89,6 +89,13 @@
 		</if>
 	</select>
 
+	<select id="listParents" resultType="com.lwc.test.view.sys.response.SysMenuRespVO">
+		select
+		<include refid="Base_Column_List" />
+		from sys_menu m
+		where m.type = 1 order by m.sort
+	</select>
+
  	<select id="countByReq" resultType="int">
 		select count(*) from sys_menu m
 		<where>

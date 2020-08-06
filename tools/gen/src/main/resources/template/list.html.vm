@@ -101,7 +101,7 @@
 		//${comments}详情
 		function Detail(id){
 			//修改
-			var url = '/pages/${classname}/update${className}.html?id='+id;
+			var url = '/pages/${classname}/add${className}?id='+id;
 			var postUrl = '/${project}/${pathName}/update';
 			var title = "更新 | ${comments}";
 			LAYER_VIEW.submitBSForm({

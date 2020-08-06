@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import ${package}.service.${project}.${className}Service;
 import ${package}.view.${project}.response.SysResult;
+import ${package}.view.base.response.BaseResult;
 import ${package}.model.${project}.${className};
 import ${req}.${className}ReqVO;
 import ${resp}.${className}RespVO;
@@ -47,28 +48,33 @@ public class ${className}Controller{
 
 	@GetMapping("/{id}")
 	@ApiOperation(value = "根据id获取")
-	public ${className} get(@PathVariable Integer id) {
-		return ${classname}Service.queryById(id);
+	public BaseResult<${className}RespVO> get(@PathVariable Integer id) {
+		BaseResult<${className}RespVO> result = new BaseResult<>();
+		${className}RespVO ${classname}RespVO = ${classname}Service.queryById(id);
+		${className}RespVO resultData = new ${className}RespVO();
+		BeanUtils.copyProperties(${classname}VO,resultData);
+		return result.success(resultData);
 	}
 
 	@PostMapping("/save")
 	@ApiOperation(value = "保存")
-	public ${className} save(@RequestBody ${className} ${classname}){
+	public BaseResult save(@RequestBody ${className} ${classname}){
 		${classname}Service.save(${classname});
-		return ${classname};
+		return new BaseResult().success();
 	}
 
-	@PutMapping("/update")
+	@PostMapping("/update")
 	@ApiOperation(value = "修改")
-	public ${className} update(@RequestBody ${className} ${classname}) {
+	public BaseResult update(@RequestBody ${className} ${classname}) {
 			${classname}Service.update(${classname});
-		return ${classname};
+		return new BaseResult().success();
 	}
 
-	@DeleteMapping("/delete/{id}")
+	@PostMapping("/delete/{id}")
 	@ApiOperation(value = "删除")
-	public void delete(@PathVariable Integer id) {
+	public BaseResult delete(@PathVariable Integer id) {
 			${classname}Service.delete(id);
+		return new BaseResult().success();
 	}
 
 }

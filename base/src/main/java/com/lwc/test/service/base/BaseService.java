@@ -10,7 +10,7 @@ import java.util.Map;
 public interface BaseService<T extends BaseModel,REQ,RESP> {
     //增删改查
     int save(T record);
-    T queryById(Integer id);
+    RESP queryById(Integer id);
     int update(T record);
     int delete(Integer id);
     //批量操作

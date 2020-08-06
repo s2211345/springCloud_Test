@@ -21,4 +21,6 @@ public interface SysMenuService extends BaseService<SysMenu,SysMenuReqVO,SysMenu
      * @return
      */
     List<SysMenuRespVO> queryListByUserId(Integer userId);
+
+    List<SysMenuRespVO> listParents();
 }

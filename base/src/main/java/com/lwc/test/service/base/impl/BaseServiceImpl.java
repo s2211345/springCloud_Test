@@ -28,7 +28,7 @@ public class BaseServiceImpl<T extends BaseModel,REQ,RESP> implements BaseServic
         return dao.save(record);
     }
     @Override
-    public T queryById(Integer id){
+    public RESP queryById(Integer id){
         return dao.queryById(id);
     }
     @Override

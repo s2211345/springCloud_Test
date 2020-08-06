@@ -20,6 +20,7 @@ var LAYER_VIEW ={
 				contentType: "application/json; charset=utf-8",
 				success:function(result){
 					close_loading();
+					result.msg = result.msg || '操作成功';
 					if(result.code==successCode){
 						top.layer.msg(result.msg,{icon:1});
 						if(callback){callback(result);}
@@ -103,8 +104,9 @@ var LAYER_VIEW ={
 					async: false,
 					success: function(data) {
 						close_loading();
+						data.msg = data.msg || '操作成功';
 						if(data.code == "0" || data.code == "200"){
-							top.layer.msg(data.msg,{icon:1});
+							top.layer.msg(data.msg ,{icon:1});
 							_success_callback(data);
 							top.layer.close(index);
 						}else{

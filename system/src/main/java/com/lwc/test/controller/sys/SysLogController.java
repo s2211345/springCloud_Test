@@ -1,8 +1,11 @@
 package com.lwc.test.controller.sys;
 
+import com.lwc.test.view.base.response.BaseResult;
+import com.lwc.test.view.sys.response.SysMenuRespVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
@@ -49,28 +52,33 @@ public class SysLogController{
 
 	@GetMapping("/{id}")
 	@ApiOperation(value = "根据id获取")
-	public SysLog get(@PathVariable Integer id) {
-		return sysLogService.queryById(id);
+	public BaseResult<SysLogRespVO> get(@PathVariable Integer id) {
+		BaseResult<SysLogRespVO> result = new BaseResult<>();
+		SysLogRespVO logRespVO = sysLogService.queryById(id);
+		SysLogRespVO resultData = new SysLogRespVO();
+		BeanUtils.copyProperties(logRespVO,resultData);
+		return result.success(resultData);
 	}
 
 	@PostMapping("/save")
 	@ApiOperation(value = "保存")
-	public SysLog save(@RequestBody SysLog sysLog){
+	public BaseResult save(@RequestBody SysLog sysLog){
 		sysLogService.save(sysLog);
-		return sysLog;
+		return new BaseResult().success();
 	}
 
 	@PutMapping("/update")
 	@ApiOperation(value = "修改")
-	public SysLog update(@RequestBody SysLog sysLog) {
-			sysLogService.update(sysLog);
-		return sysLog;
+	public BaseResult update(@RequestBody SysLog sysLog) {
+		sysLogService.update(sysLog);
+		return new BaseResult().success();
 	}
 
 	@DeleteMapping("/delete/{id}")
 	@ApiOperation(value = "删除")
-	public void delete(@PathVariable Integer id) {
-			sysLogService.delete(id);
+	public BaseResult delete(@PathVariable Integer id) {
+		sysLogService.delete(id);
+		return new BaseResult().success();
 	}
 
 }

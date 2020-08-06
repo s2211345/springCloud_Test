@@ -135,7 +135,7 @@
 			title: title,
 			success_callback:function(data){
 				setTimeout(function(){
-					tableReload();
+					location.reload();
 				},1000)
 			}
 		});
@@ -143,7 +143,7 @@
 
 	function editMenu(id){
 		//修改
-		var url = '/pages/sys/sysMenu/updateSysMenu.html?id='+id;
+		var url = '/pages/sys/sysMenu/addSysMenu.html?id='+id;
 		var postUrl = '/admin/sysmenu/update';
 		var title = "更新 | 菜单";
 		LAYER_VIEW.submitBSForm({
@@ -156,7 +156,7 @@
 			title: title,
 			success_callback:function(data){
 				setTimeout(function(){
-					tableReload();
+					location.reload();
 				},1000)
 			}
 		});
@@ -194,13 +194,9 @@
 		clickableNodeNames : true,
 		onNodeExpand : function() {
 			var d = this;
-			console.log(d['id']);
-			console.log(d['parentId']);
 		},
 		onNodeCollapse : function() {
 			var d = this;
-			console.log(d['id'] + "Collapse");
-			console.log(d['parentId'] + "Collapse");
 		}
 
 	};
