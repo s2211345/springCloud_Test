@@ -40,14 +40,12 @@ public class SysRoleController{
 	public SysResult<List<SysRoleRespVO>> list(@RequestBody SysRoleReqVO sysRoleReqVO) {
 		if(0 != sysRoleReqVO.getPage() && 0 != sysRoleReqVO.getLimit()){
 			int page = (sysRoleReqVO.getPage()-1) * sysRoleReqVO.getLimit();
-				sysRoleReqVO.setPage(page);
+			sysRoleReqVO.setPage(page);
 		}
 		SysResult<List<SysRoleRespVO>> result = new SysResult<>();
-		List<SysRoleRespVO> sysRoleRespVOS = sysRoleService.listByReq(sysRoleReqVO);
+		List<SysRoleRespVO> list = sysRoleService.listByReq(sysRoleReqVO);
 		int count = sysRoleService.countByReq(sysRoleReqVO);
-		result.setData(sysRoleRespVOS);
-		result.setCount(count);
-		return result;
+		return result.successOK(list,count);
 	}
 
 	@GetMapping("/{id}")
@@ -62,15 +60,15 @@ public class SysRoleController{
 
 	@PostMapping("/save")
 	@ApiOperation(value = "保存")
-	public BaseResult save(@RequestBody SysRole sysRole){
-		sysRoleService.save(sysRole);
+	public BaseResult save(@RequestBody SysRoleReqVO req){
+		sysRoleService.saveOrUpdate(req);
 		return new BaseResult().success();
 	}
 
-	@PutMapping("/update")
+	@PostMapping("/update")
 	@ApiOperation(value = "修改")
-	public BaseResult update(@RequestBody SysRole sysRole) {
-			sysRoleService.update(sysRole);
+	public BaseResult update(@RequestBody SysRoleReqVO req) {
+			sysRoleService.saveOrUpdate(req);
 		return new BaseResult().success();
 	}
 

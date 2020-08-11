@@ -1,6 +1,9 @@
 package com.lwc.test.view.sys.request;
 
 import java.util.Date;
+import java.util.List;
+
+import com.lwc.test.model.sys.SysMenu;
 import lombok.Data;
 import com.lwc.test.view.base.request.BaseRequestView;
 
@@ -31,8 +34,9 @@ public class SysRoleReqVO extends BaseRequestView{
 	private String sbyField;
 	//排序方式
 	private String sby;
+	private int[] roleList;
 	//当前页码
-	private int page = 1;
+	private int page = 0;
 	//当页展示多少条数据
 	private int limit = 10;
 }

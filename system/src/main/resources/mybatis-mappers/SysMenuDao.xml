@@ -84,7 +84,7 @@
             order by m.create_time desc
 				</otherwise>
       </choose>
-		<if test="page != null and page != null">
+		<if test="page != null and limit != null">
 			limit #{page}, #{limit}
 		</if>
 	</select>

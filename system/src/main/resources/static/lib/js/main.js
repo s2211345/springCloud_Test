@@ -11,7 +11,7 @@ function initMenu(){
 			$.each(data, function(i,item){
 				var a = $("<a href='javascript:;'></a>");
 
-				var css = item.css;
+				var css = item.ico;
 				if(css!=null && css!=""){
 					a.append("<i aria-hidden='true' class='fa " + css +"'></i>");
 				}
@@ -45,7 +45,7 @@ function setChild(parentElement, child){
             ca.attr("data-url", item2.href);
             ca.attr("lay-id", item2.id);
 
-            var css2 = item2.css;
+            var css2 = item2.ico;
             if(css2!=null && css2!=""){
                 ca.append("<i aria-hidden='true' class='fa " + css2 +"'></i>");
             }

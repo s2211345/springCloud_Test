@@ -19,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin/sysUser")
 @Slf4j
@@ -31,17 +33,11 @@ public class SysUserController extends BaseController {
     @Autowired
     private SecurityTokenUtils securityTokenUtils;
 
-    @PostMapping("save")
-    public SysResult<SysUser> save(@RequestBody SysUser user){
-        SysResult<SysUser> result = new SysResult<>();
-        sysUserService.save(user);
-        result.setData(user);
-        return result;
-    }
-
-    @GetMapping("save")
-    public String save(){
-        return "get";
+    @PostMapping("/save")
+    @ResponseBody
+    public BaseResult save(@RequestBody SysUserReqVO req){
+        sysUserService.saveUser(req);
+        return new BaseResult().success();
     }
 
     @GetMapping("/login")
@@ -72,6 +68,27 @@ public class SysUserController extends BaseController {
         }
         AccessToken accessToken = securityTokenUtils.refreshToken(oldToken);
         return result.success(accessToken);
+    }
+
+    @PostMapping("/list")
+    @ResponseBody
+    public SysResult<List<SysUserRespVO>> getlist(SysUserReqVO req){
+        SysResult result = new SysResult();
+        if(0 != req.getPage() && 0 != req.getLimit()){
+            int page = (req.getPage()-1) * req.getLimit();
+            req.setPage(page);
+        }
+        List<SysUserRespVO> list = sysUserService.listByReq(req);
+        int count = sysUserService.countByReq(req);
+        return result.successOK(list,count);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public BaseResult<SysUserRespVO> get(@PathVariable Integer id){
+        SysResult result = new SysResult();
+        SysUserRespVO vo = sysUserService.queryById(id);
+        return result.success(vo);
     }
 
 }

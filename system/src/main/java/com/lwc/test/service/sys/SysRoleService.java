@@ -13,4 +13,5 @@ import com.lwc.test.view.sys.response.SysRoleRespVO;
  * @date 2020-07-15 11:47:00
  */
 public interface SysRoleService extends BaseService<SysRole,SysRoleReqVO,SysRoleRespVO>{
+    void saveOrUpdate(SysRoleReqVO req);
 }

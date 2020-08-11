@@ -19,5 +19,5 @@ public class SysRoleMenuRespVO extends BaseResponseView{
 	// 角色id
 	private Integer roleId;
 	// 菜单id
-	private Integer menu;
+	private Integer menuId;
 }

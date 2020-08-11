@@ -12,7 +12,7 @@
         <result property="headImgUrl" column="head_img_url"/>
         <result property="phone" column="phone"/>
         <result property="telePhone" column="tele_phone"/>
-        <result property="eMail" column="e_mail"/>
+        <result property="mailbox" column="mailbox"/>
         <result property="birthday" column="birthday"/>
         <result property="sex" column="sex"/>
         <result property="age" column="age"/>
@@ -30,7 +30,7 @@
 		u.head_img_url, 
 		u.phone, 
 		u.tele_phone, 
-		u.e_mail, 
+		u.mailbox, 
 		u.birthday, 
 		u.sex, 
 		u.age, 
@@ -47,7 +47,7 @@
 				<if test="headImgUrl != null and headImgUrl != ''">AND u.`head_img_url` = #{headImgUrl}</if>
 				<if test="phone != null and phone != ''">AND u.`phone` = #{phone}</if>
 				<if test="telePhone != null and telePhone != ''">AND u.`tele_phone` = #{telePhone}</if>
-				<if test="eMail != null and eMail != ''">AND u.`e_mail` = #{eMail}</if>
+				<if test="mailbox != null and mailbox != ''">AND u.`mailbox` = #{mailbox}</if>
 				<if test="birthday != null">AND u.`birthday` = #{birthday}</if>
 				<if test="sex != null">AND u.`sex` = #{sex}</if>
 				<if test="age != null and age != ''">AND u.`age` = #{age}</if>
@@ -86,10 +86,10 @@
 				order by ${sbyField} ${sby}
 			</when>
 			<otherwise>
-				order by ur.create_time desc
+				order by u.create_time desc
 			</otherwise>
 		</choose>
-		<if test="page != null and page != null">
+		<if test="page != null and limit != null">
 			limit #{page},#{limit}
 		</if>
 	</select>
@@ -128,8 +128,8 @@
 			<if test="telePhone != null">
 				`tele_phone`,
 		  	</if>
-			<if test="eMail != null">
-				`e_mail`,
+			<if test="mailbox != null">
+				`mailbox`,
 		  	</if>
 			<if test="birthday != null">
 				`birthday`,
@@ -175,8 +175,8 @@
 			<if test="telePhone != null">
 				#{telePhone},
 			</if>
-			<if test="eMail != null">
-				#{eMail},
+			<if test="mailbox != null">
+				#{mailbox},
 			</if>
 			<if test="birthday != null">
 				#{birthday},
@@ -212,7 +212,7 @@
 			`head_img_url`, 
 			`phone`, 
 			`tele_phone`, 
-			`e_mail`, 
+			`mailbox`, 
 			`birthday`, 
 			`sex`, 
 			`age`, 
@@ -231,7 +231,7 @@
 			#{item.headImgUrl}, 
 			#{item.phone}, 
 			#{item.telePhone}, 
-			#{item.eMail}, 
+			#{item.mailbox}, 
 			#{item.birthday}, 
 			#{item.sex}, 
 			#{item.age}, 
@@ -252,7 +252,7 @@
 			<if test="headImgUrl != null">`head_img_url` = #{headImgUrl}, </if>
 			<if test="phone != null">`phone` = #{phone}, </if>
 			<if test="telePhone != null">`tele_phone` = #{telePhone}, </if>
-			<if test="eMail != null">`e_mail` = #{eMail}, </if>
+			<if test="mailbox != null">`mailbox` = #{mailbox}, </if>
 			<if test="birthday != null">`birthday` = #{birthday}, </if>
 			<if test="sex != null">`sex` = #{sex}, </if>
 			<if test="age != null">`age` = #{age}, </if>

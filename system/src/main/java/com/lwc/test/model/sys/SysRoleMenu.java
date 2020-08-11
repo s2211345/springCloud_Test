@@ -19,7 +19,6 @@ public class SysRoleMenu  extends BaseModel {
 	// 角色id
 	private Integer roleId;
 	// 菜单id
-	private Integer menu;
-
+	private Integer menuId;
 
 }

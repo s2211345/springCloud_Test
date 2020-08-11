@@ -81,7 +81,7 @@ public class SysMenuController{
 
 	@GetMapping("/getList")
 	@ApiOperation(value = "菜单列表")
-	@PreAuthorize("hasAuthority('sys:menu:query')")
+//	@PreAuthorize("hasAuthority('sys:menu:query')")
 	public List<SysMenuRespVO> permissionsList() {
 		List<SysMenuRespVO> permissionsAll = sysMenuService.listByReq(new SysMenuReqVO());
 		List<SysMenuRespVO> list = Lists.newArrayList();
@@ -127,7 +127,7 @@ public class SysMenuController{
 
 	@GetMapping("/parents")
 	@ApiOperation(value = "一级菜单")
-	@PreAuthorize("hasAuthority('sys:menu:query')")
+//	@PreAuthorize("hasAuthority('sys:menu:query')")
 	public List<SysMenuRespVO> parentMenu() {
 		List<SysMenuRespVO> parents = sysMenuService.listParents();
 

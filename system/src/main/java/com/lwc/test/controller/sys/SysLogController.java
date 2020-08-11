@@ -40,7 +40,7 @@ public class SysLogController{
 	public SysResult<List<SysLogRespVO>> list(@RequestBody SysLogReqVO sysLogReqVO) {
 		if(0 != sysLogReqVO.getPage() && 0 != sysLogReqVO.getLimit()){
 			int page = (sysLogReqVO.getPage()-1) * sysLogReqVO.getLimit();
-				sysLogReqVO.setPage(page);
+			sysLogReqVO.setPage(page);
 		}
 		SysResult<List<SysLogRespVO>> result = new SysResult<>();
 		List<SysLogRespVO> sysLogRespVOS = sysLogService.listByReq(sysLogReqVO);

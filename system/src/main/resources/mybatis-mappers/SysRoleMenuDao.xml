@@ -6,15 +6,16 @@
 
     <resultMap type="com.lwc.test.model.sys.SysRoleMenu" id="sysRoleMenuMap">
         <result property="roleId" column="role_id"/>
-        <result property="menu" column="menu"/>
+        <result property="menuId" column="menu_id"/>
     </resultMap>
 
     <sql id="Base_Column_List" >
 		rm.role_id,
-		rm.menu    </sql>
+		rm.menu_id
+	</sql>
 
 	<sql id="where">
-		<if test="menu != null and menu != ''">AND rm.`menu` = #{menu}</if>
+		<if test="menuId != null and menuId != ''">AND rm.`menu_id` = #{menuId}</if>
 	</sql>
 
 	<select id="queryById" resultType="com.lwc.test.view.sys.response.SysRoleMenuRespVO">
@@ -49,7 +50,7 @@
             order by rm.create_time desc
 				</otherwise>
       </choose>
-		<if test="page != null and page != null">
+		<if test="page != null and limit != null">
 			limit #{page}, #{limit}
 		</if>
 	</select>
@@ -70,16 +71,16 @@
 			<if test="roleId != null">
 				`role_id`,
 		  	</if>
-			<if test="menu != null">
-				`menu`,
+			<if test="menuId != null">
+				`menu_id`,
 		  	</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="roleId != null">
 				#{roleId},
 			</if>
-			<if test="menu != null">
-				#{menu},
+			<if test="menuId != null">
+				#{menuId},
 			</if>
 		</trim>
 	</insert>
@@ -87,14 +88,14 @@
 	<insert id="batchSave" parameterType="com.lwc.test.model.sys.SysRoleMenu">
 		insert into sys_role_menu
 		(
-			`role_id`, 
-			`menu`
+			`role_id`,
+			`menu_id`
 		)
 		values
 		<foreach collection="list" item="item" index="index" separator=",">
 			(
-			#{item.roleId}, 
-			#{item.menu}
+			#{item.roleId},
+			#{item.menuId}
 			)
 		</foreach>
 	</insert>
@@ -102,12 +103,12 @@
 	<update id="update" parameterType="com.lwc.test.model.sys.SysRoleMenu">
 		update sys_role_menu
 		<set>
-			<if test="menu != null">`menu` = #{menu}</if>
+			<if test="menuId != null">`menu_id` = #{menuId}</if>
 		</set>
 		where role_id = #{roleId}
 	</update>
 
-	<delete id="delete">
+	<delete id="deleteByRoleId">
 		delete from sys_role_menu where role_id = #{value}
 	</delete>
 

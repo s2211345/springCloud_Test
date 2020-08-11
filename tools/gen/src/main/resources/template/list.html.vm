@@ -17,10 +17,10 @@
 		<input class="layui-input" name="serchName" id="serchName" autocomplete="off">
 	</div>
 	<div class="layui-inline">
-		<button class="layui-btn" data-type="reload" id="searchBtn">搜索</button>
+		<button class="layui-btn layui-btn-normal" data-type="reload" id="searchBtn">搜索</button>
 	</div>
 	<div class="layui-layout-right">
-		<button class="layui-btn layui-btn-sm" id="btAdd">
+		<button class="layui-btn layui-btn-normal layui-btn-sm" id="btAdd">
 			<i class="layui-icon">&#xe608;</i> 新增
 		</button>
 	</div>
@@ -79,7 +79,7 @@
 				#foreach($column in $columns)
 					{field: '${column.attrname}', title: '$column.comments', width:150,totalRow: true},
 				#end
-				{fixed: 'right',title: '操作', width:100, align:'center', toolbar: '#testBar'}
+				{fixed: 'right',title: '操作',align:'center', toolbar: '#testBar'}
 			]]
 		});
 
@@ -101,7 +101,7 @@
 		//${comments}详情
 		function Detail(id){
 			//修改
-			var url = '/pages/${classname}/add${className}?id='+id;
+			var url = '/pages/${project}/${classname}/add${className}?id='+id;
 			var postUrl = '/${project}/${pathName}/update';
 			var title = "更新 | ${comments}";
 			LAYER_VIEW.submitBSForm({
@@ -131,7 +131,7 @@
 
 		$("#btAdd").on('click',function(){
 			//修改
-			var url = '/pages/${classname}/add${className}.html';
+			var url = '/pages/${project}/${classname}/add${className}.html';
 			var postUrl = '/${project}/${pathName}/save';
 			var title = "新增 | ${comments}";
 			LAYER_VIEW.submitBSForm({

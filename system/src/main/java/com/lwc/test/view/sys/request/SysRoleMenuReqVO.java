@@ -19,14 +19,14 @@ public class SysRoleMenuReqVO extends BaseRequestView{
 	// 角色id
 	private Integer roleId;
 	// 菜单id
-	private Integer menu;
+	private Integer menuId;
 
 	// 排序字段
 	private String sbyField;
 	//排序方式
 	private String sby;
 	//当前页码
-	private int page = 1;
+	private int page = 0;
 	//当页展示多少条数据
 	private int limit = 10;
 }

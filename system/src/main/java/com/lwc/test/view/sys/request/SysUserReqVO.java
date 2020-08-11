@@ -36,7 +36,7 @@ public class SysUserReqVO extends BaseRequestView implements UserDetails {
 	// 电话号码
 	private String telePhone;
 	// 邮箱
-	private String eMail;
+	private String mailbox;
 	// 生日
 	private Date birthday;
 	// 性别
@@ -57,7 +57,7 @@ public class SysUserReqVO extends BaseRequestView implements UserDetails {
 	//排序方式
 	private String sby;
 	//当前页码
-	private int page = 1;
+	private int page = 0;
 	//当页展示多少条数据
 	private int limit = 10;
 

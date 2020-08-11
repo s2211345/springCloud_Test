@@ -33,7 +33,7 @@ public class SysUser extends BaseModel{
 	// 电话号码
 	private String telePhone;
 	// 邮箱
-	private String eMail;
+	private String mailbox;
 	// 生日
 	private Date birthday;
 	// 性别

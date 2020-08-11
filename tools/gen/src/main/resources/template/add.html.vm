@@ -18,17 +18,17 @@
 			 label-position="left"
 			 id="file_form"
 			 :rules="rules">
-		#foreach($column in $columns)
-			#if($column.columnName != "id")
-				<el-row :gutter="20" class="firstDiv">
-					<el-col :span="15" :push="1">
-						<el-form-item label="${column.comments}：" span="12" prop="${column.attrname}">
-							<el-input v-model="form.${column.attrname}" name="${column.attrname}"></el-input>
-						</el-form-item>
-					</el-col>
-				</el-row>
-			#end
-		#end
+#foreach($column in $columns)
+#if($column.columnName != "id")
+	<el-row :gutter="20" class="firstDiv">
+		<el-col :span="15" :push="1">
+			<el-form-item label="${column.comments}：" span="12" prop="${column.attrname}">
+				<el-input v-model="form.${column.attrname}" name="${column.attrname}"></el-input>
+			</el-form-item>
+		</el-col>
+	</el-row>
+#end
+#end
 
 	</el-form>
 </div>
@@ -43,15 +43,15 @@
 		el: '#app',
 		data: {
 			form:{
-		#foreach($column in $columns)
-			${column.attrname}:'',
-		#end
+#foreach($column in $columns)
+	${column.attrname}:'',
+#end
 	},
 	token:{},
 	rules:{
-		#foreach($column in $columns)
-			${column.attrname}:{required: true, message: '请输入${column.comments}', trigger: 'blur'},
-		#end
+#foreach($column in $columns)
+	${column.attrname}:{required: true, message: '请输入${column.comments}', trigger: 'blur'},
+#end
 	}
 	},
 	beforeCreate: function(){

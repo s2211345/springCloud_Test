@@ -41,7 +41,7 @@ public class SysUserRespVO extends BaseResponseView implements UserDetails {
 	// 电话号码
 	private String telePhone;
 	// 邮箱
-	private String eMail;
+	private String mailbox;
 	// 生日
 	private Date birthday;
 	// 性别
@@ -91,7 +91,7 @@ public class SysUserRespVO extends BaseResponseView implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return  authoritys.parallelStream().filter(p -> !StringUtils.isEmpty(p.getPermission()))
+		return  authoritys == null ? null : authoritys.parallelStream().filter(p -> !StringUtils.isEmpty(p.getPermission()))
 				.map(p -> new SimpleGrantedAuthority(p.getPermission())).collect(Collectors.toSet());
 	}
 }
