@@ -7,6 +7,7 @@
     <resultMap type="com.lwc.test.model.sys.SysLog" id="sysLogMap">
         <result property="id" column="id"/>
         <result property="userName" column="user_name"/>
+        <result property="actualName" column="actual_name"/>
         <result property="operation" column="operation"/>
         <result property="flag" column="flag"/>
         <result property="errMsg" column="err_msg"/>
@@ -17,6 +18,7 @@
     <sql id="Base_Column_List" >
 		l.id,
 		l.user_name,
+		l.actual_name,
 		l.operation,
 		l.flag,
 		l.err_msg,
@@ -25,6 +27,7 @@
 
 	<sql id="where">
 		<if test="userName != null and userName != ''">AND l.`user_name` = #{userName}</if>
+		<if test="actualName != null and actualName != ''">AND l.`actual_name` = #{actualName}</if>
 		<if test="operation != null and operation != ''">AND l.`operation` = #{operation}</if>
 		<if test="flag != null">AND l.`flag` = #{flag}</if>
 		<if test="errMsg != null and errMsg != ''">AND l.`err_msg` = #{errMsg}</if>
@@ -88,6 +91,9 @@
 			<if test="userName != null">
 				`user_name`,
 		  	</if>
+			<if test="actualName != null">
+				`actual_name`,
+		  	</if>
 			<if test="operation != null">
 				`operation`,
 		  	</if>
@@ -110,6 +116,9 @@
 			</if>
 			<if test="userName != null">
 				#{userName},
+			</if>
+			<if test="actualName != null">
+				#{actualName},
 			</if>
 			<if test="operation != null">
 				#{operation},
@@ -134,7 +143,8 @@
 		(
 			`id`, 
 			`user_name`, 
-			`operation`, 
+			`actual_name`,
+			`operation`,
 			`flag`, 
 			`err_msg`, 
 			`create_time`, 
@@ -145,7 +155,8 @@
 			(
 			#{item.id}, 
 			#{item.userName}, 
-			#{item.operation}, 
+			#{item.actualName},
+			#{item.operation},
 			#{item.flag}, 
 			#{item.errMsg}, 
 			#{item.createTime}, 
@@ -158,6 +169,7 @@
 		update sys_log
 		<set>
 			<if test="userName != null">`user_name` = #{userName}, </if>
+			<if test="actualName != null">`actual_name` = #{actualName}, </if>
 			<if test="operation != null">`operation` = #{operation}, </if>
 			<if test="flag != null">`flag` = #{flag}, </if>
 			<if test="errMsg != null">`err_msg` = #{errMsg}, </if>

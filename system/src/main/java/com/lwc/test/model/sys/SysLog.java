@@ -20,6 +20,8 @@ public class SysLog  extends BaseModel {
 	private Integer id;
 	// 用户名称
 	private String userName;
+	// 用户姓名
+	private String actualName;
 	// 执行操作
 	private String operation;
 	// 是否成功

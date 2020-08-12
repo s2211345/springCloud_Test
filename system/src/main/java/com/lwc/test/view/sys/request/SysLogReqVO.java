@@ -19,7 +19,9 @@ public class SysLogReqVO extends BaseRequestView{
 	// 
 	private Integer id;
 	// 用户id
-	private Integer userId;
+	private Integer userName;
+	// 用户姓名
+	private String actualName;
 	// 执行操作
 	private String operation;
 	// 是否成功

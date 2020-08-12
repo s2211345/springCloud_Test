@@ -45,9 +45,7 @@ public class SysLogController{
 		SysResult<List<SysLogRespVO>> result = new SysResult<>();
 		List<SysLogRespVO> sysLogRespVOS = sysLogService.listByReq(sysLogReqVO);
 		int count = sysLogService.countByReq(sysLogReqVO);
-		result.setData(sysLogRespVOS);
-		result.setCount(count);
-		return result;
+		return result.successOK(sysLogRespVOS,count);
 	}
 
 	@GetMapping("/{id}")

@@ -18,8 +18,10 @@ public class SysLogRespVO extends BaseResponseView{
 	
 	// 
 	private Integer id;
-	// 用户id
-	private Integer userId;
+	// 用户名
+	private String userName;
+	// 用户姓名
+	private String actualName;
 	// 执行操作
 	private String operation;
 	// 是否成功
