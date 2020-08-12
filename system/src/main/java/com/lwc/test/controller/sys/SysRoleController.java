@@ -1,7 +1,10 @@
 package com.lwc.test.controller.sys;
 
+import com.lwc.test.service.sys.SysRoleMenuService;
 import com.lwc.test.view.base.response.BaseResult;
+import com.lwc.test.view.sys.request.SysRoleMenuReqVO;
 import com.lwc.test.view.sys.response.SysMenuRespVO;
+import com.lwc.test.view.sys.response.SysRoleMenuRespVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +37,8 @@ public class SysRoleController{
 
 	@Autowired
 	private SysRoleService sysRoleService;
+	@Autowired
+	private SysRoleMenuService sysRoleMenuService;
 
 	@PostMapping("/getList")
 	@ApiOperation(value = "列表")
@@ -53,9 +58,11 @@ public class SysRoleController{
 	public BaseResult<SysRoleRespVO> get(@PathVariable Integer id) {
 		BaseResult<SysRoleRespVO> result = new BaseResult<>();
 		SysRoleRespVO roleRespVO = sysRoleService.queryById(id);
-		SysRoleRespVO resultData = new SysRoleRespVO();
-		BeanUtils.copyProperties(roleRespVO,resultData);
-		return result.success(resultData);
+		SysRoleMenuReqVO roleMenuParam = new SysRoleMenuReqVO();
+		roleMenuParam.setRoleId(id);
+		List<SysRoleMenuRespVO> menus = sysRoleMenuService.listByReq(roleMenuParam);
+		roleRespVO.setMenus(menus);
+		return result.success(roleRespVO);
 	}
 
 	@PostMapping("/save")

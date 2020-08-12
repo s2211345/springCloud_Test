@@ -1,6 +1,8 @@
 package com.lwc.test.view.sys.response;
 
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 import com.lwc.test.view.base.response.BaseResponseView;
 
@@ -26,4 +28,7 @@ public class SysRoleRespVO extends BaseResponseView{
 	private Date createTime;
 	// 更新时间
 	private Date updateTime;
+
+	//角色权限集
+	List<SysRoleMenuRespVO> menus;
 }

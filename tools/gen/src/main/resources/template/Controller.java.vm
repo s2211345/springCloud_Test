@@ -51,8 +51,6 @@ public class ${className}Controller{
 	public BaseResult<${className}RespVO> get(@PathVariable Integer id) {
 		BaseResult<${className}RespVO> result = new BaseResult<>();
 		${className}RespVO ${classname}RespVO = ${classname}Service.queryById(id);
-		${className}RespVO resultData = new ${className}RespVO();
-		BeanUtils.copyProperties(${classname}VO,resultData);
 		return result.success(resultData);
 	}
 

@@ -81,6 +81,7 @@
 					roleList: [],
 			},
 			roles:[],
+			rolesPids:[],
 			defaultProps: {
 				children: 'child',
 				label: 'name'
@@ -102,10 +103,10 @@
 		vm.token = {
 			token : localStorage.getItem("token")
 		}
-		//初始化
-		vm.initData();
 		//初始化树
 		vm.initTree();
+		//初始化
+		vm.initData();
 	},
 	methods: {
 		valudatorForm(){
@@ -127,7 +128,6 @@
 				contentType: "application/json; charset=utf-8",
 				async : false,
 				success : function(data) {
-					console.log(data)
 					vm.setRoleChild(data);
 					// vm.roles = data;
 				}
@@ -136,25 +136,40 @@
 		setRoleChild : function(data){
 			let vm = this;
 			if(data){
-				let pid = 0;
-				let current = 0;
-				for(let i = 0;i<data.length;i++){
-					if(pid != data[i].parentId || data[i].parentId == 0){
-						pid = data[i].id;
+				for (let i = 0; i < data.length; i++) {
+					//一级节点先组装
+					if(data[i].parentId == 0){
 						vm.roles.push(data[i]);
-						data[i].child = new Array();
-						current = i;
-					}
-					if(pid == data[i].parentId){
-						vm.roles[current].child.push(data[i]);
+						vm.rolesPids.push(data[i].id);
 					}
 				}
-
+				//遍历一级节点组装所有子节点
+				for (let i = 0; i < vm.roles.length; i++) {
+					vm.loopChild(data,vm.roles[i])
+				}
 			}
 		},
+		//遍历组装子节点
+		loopChild : function(menuList,pNode){
+			let vm = this;
+			let childs = new Array();
+			for (let i = 0; i < menuList.length; i++) {
+				if(menuList[i].parentId == pNode.id){
+					childs.push(menuList[i]);
+				}
+			}
+			pNode.child = childs;
+			if(childs && childs.length > 0){
+				vm.rolesPids.push(pNode.id)
+				for (let i = 0; i < childs.length; i++) {
+					vm.loopChild(menuList, childs[i]);
+				}
+			}
+
+		},
 		initData: function() {
-			var vm = this;
-			var id = vm.getUrlParam("id");
+			let vm = this;
+			let id = vm.getUrlParam("id");
 			if(id == undefined || id == null || id == ""){
 				return;
 			}
@@ -163,9 +178,28 @@
 				url : '/admin/sysrole/' + id,
 				contentType: "application/json; charset=utf-8",
 				async : false,
-				success : function(data) {
-					if(data.code == '200'){
-						vm.form = data.data;
+				success : function(result) {
+					let data = result.data;
+					if(result.code == '200'){
+						vm.form = data;
+						if(data.menus && data.menus.length > 0){
+							let menuList = new Array();
+							for (let i = 0; i < data.menus.length; i++) {
+								menuList.push(data.menus[i].menuId);
+							}
+							for (let i = 0; i < vm.rolesPids.length; i++) {
+								for (let j = 0; j < menuList.length; j++) {
+									if(vm.rolesPids[i] == menuList[j]){
+										menuList.splice(j, 1);
+									}
+								}
+							}
+							console.log(menuList)
+							vm.$nextTick(() => {
+								vm.$refs.roleTree.setCheckedKeys(menuList,true);
+							});
+
+						}
 					}
 				}
 			});

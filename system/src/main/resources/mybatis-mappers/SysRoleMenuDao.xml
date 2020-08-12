@@ -16,6 +16,7 @@
 
 	<sql id="where">
 		<if test="menuId != null and menuId != ''">AND rm.`menu_id` = #{menuId}</if>
+		<if test="roleId != null and roleId != ''">AND rm.`role_id` = #{roleId}</if>
 	</sql>
 
 	<select id="queryById" resultType="com.lwc.test.view.sys.response.SysRoleMenuRespVO">
@@ -42,17 +43,6 @@
 		<where>
 			<include refid="where" />
 		</where>
-      <choose>
-        <when test="sbyField != null and sbyField.trim() != ''">
-            order by ${sbyField} ${sby}
-        </when>
-				<otherwise>
-            order by rm.create_time desc
-				</otherwise>
-      </choose>
-		<if test="page != null and limit != null">
-			limit #{page}, #{limit}
-		</if>
 	</select>
 
  	<select id="countByReq" resultType="int">
