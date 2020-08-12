@@ -14,4 +14,5 @@ import com.lwc.test.view.sys.response.SysRoleMenuRespVO;
  */
 public interface SysRoleMenuDao extends BaseDao<SysRoleMenu,SysRoleMenuReqVO,SysRoleMenuRespVO> {
     void deleteByRoleId(Integer id);
+    void deleteByMenuId(Integer id);
 }

@@ -138,7 +138,6 @@
 					//一级节点先组装
 					if(data[i].parentId == 0){
 						vm.roles.push(data[i]);
-						vm.rolesPids.push(data[i].id);
 					}
 				}
 				//遍历一级节点组装所有子节点
@@ -158,10 +157,12 @@
 			}
 			pNode.child = childs;
 			if(childs && childs.length > 0){
-				vm.rolesPids.push(pNode.id)
+				vm.rolesPids.push({id:pNode.id,isChild:true})
 				for (let i = 0; i < childs.length; i++) {
 					vm.loopChild(menuList, childs[i]);
 				}
+			}else{
+				vm.rolesPids.push({id:pNode.id,isChild:false})
 			}
 
 		},
@@ -184,7 +185,7 @@
 							}
 							for (let i = 0; i < vm.rolesPids.length; i++) {
 								for (let j = 0; j < menuList.length; j++) {
-									if(vm.rolesPids[i] == menuList[j]){
+									if(vm.rolesPids[i].isChild == true && vm.rolesPids[i].id == menuList[j]){
 										menuList.splice(j, 1);
 									}
 								}

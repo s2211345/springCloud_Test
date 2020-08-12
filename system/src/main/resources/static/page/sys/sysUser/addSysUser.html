@@ -98,7 +98,7 @@
             <el-col :span="15" :push="1">
                 <el-form-item label="角色：" span="12" prop="sex">
                     <el-checkbox-group v-model="form.roles">
-                        <el-checkbox v-for="(role,index) in roles" label="role.name" value="role.id"></el-checkbox>
+                        <el-checkbox v-for="(role,index) in roles" :label="role.id">{{role.name}}</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
             </el-col>
@@ -153,6 +153,7 @@
             vm.token = {
                 token: localStorage.getItem("token")
             }
+            vm.initRole();
             //初始化
             vm.initData();
         },
@@ -194,14 +195,37 @@
                         let data = result.data;
                         if (result.code == '200') {
                             vm.form = data;
+                            console.log(data)
                             vm.form.userName = data.username;
-                            console.log(vm.form.sex)
+                            /*if(! vm.form.roles){
+                                vm.form.roles = new Array();
+                            }*/
+                            if(data.roles && data.roles.length > 0){
+                                let roles = new Array();
+                                for (let i = 0; i < data.roles.length; i++) {
+                                    roles.push(data.roles[i].roleId);
+                                }
+                                vm.form.roles = roles;
+                            }
                         }
                     }
                 })
             },
             initRole:function(){
+                var vm = this;
+                let data = {
 
+                }
+                HTTP.POST({
+                    url:'/admin/sysrole/getList',
+                    data:JSON.stringify(data),
+                    okCall:function(result){
+                        if(result.code == '200'){
+                            let data = result.data;
+                            vm.roles = data;
+                        }
+                    }
+                })
             },
             getUrlParam: function (name) {
                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");

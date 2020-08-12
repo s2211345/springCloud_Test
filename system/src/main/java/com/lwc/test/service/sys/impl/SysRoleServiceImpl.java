@@ -32,7 +32,7 @@ public class SysRoleServiceImpl extends BaseServiceImpl<SysRole,SysRoleReqVO, Sy
 	SysRoleMenuDao roleMenuDao;
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void saveOrUpdate(SysRoleReqVO req) {
 		SysRole sysRole = new SysRole();
 		BeanUtils.copyProperties(req,sysRole);

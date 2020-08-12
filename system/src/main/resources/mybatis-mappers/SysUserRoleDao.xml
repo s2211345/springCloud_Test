@@ -15,6 +15,7 @@
 
 	<sql id="where">
 		<if test="roleId != null and roleId != ''">AND ur.`role_id` = #{roleId}</if>
+		<if test="userId != null and userId != ''">AND ur.`user_id` = #{userId}</if>
 	</sql>
 
 	<select id="queryById" resultType="com.lwc.test.view.sys.response.SysUserRoleRespVO">
@@ -37,21 +38,12 @@
 	<select id="listByReq" resultType="com.lwc.test.view.sys.response.SysUserRoleRespVO" parameterType="com.lwc.test.view.sys.request.SysUserRoleReqVO">
 		select
 		<include refid="Base_Column_List" />
+		,role.name AS roleName
 		from sys_user_role ur
+		LEFT JOIN sys_role role ON role.id = ur.role_id
 		<where>
 			<include refid="where" />
 		</where>
-      <choose>
-        <when test="sbyField != null and sbyField.trim() != ''">
-            order by ${sbyField} ${sby}
-        </when>
-				<otherwise>
-            order by ur.create_time desc
-				</otherwise>
-      </choose>
-		<if test="page != null and limit != null">
-			limit #{page}, #{limit}
-		</if>
 	</select>
 
  	<select id="countByReq" resultType="int">

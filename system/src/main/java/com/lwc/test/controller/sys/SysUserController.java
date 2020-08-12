@@ -4,13 +4,16 @@ import com.lwc.test.controller.base.BaseController;
 import com.lwc.test.enums.base.BaseCodeEnum;
 import com.lwc.test.model.sys.SysUser;
 import com.lwc.test.model.sys.security.AccessToken;
+import com.lwc.test.service.sys.SysUserRoleService;
 import com.lwc.test.service.sys.SysUserService;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
 import com.lwc.test.utils.SecurityTokenUtils;
 import com.lwc.test.view.base.response.BaseResult;
 import com.lwc.test.view.sys.request.SysUserReqVO;
+import com.lwc.test.view.sys.request.SysUserRoleReqVO;
 import com.lwc.test.view.sys.response.SysResult;
 import com.lwc.test.view.sys.response.SysUserRespVO;
+import com.lwc.test.view.sys.response.SysUserRoleRespVO;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +33,8 @@ public class SysUserController extends BaseController {
     @Autowired
     private SysUserService sysUserService;
     @Autowired
+    private SysUserRoleService sysUserRoleService;
+    @Autowired
     private SecurityUserDetailsServiceImpl securityUserDetailsService;
     @Autowired
     private SecurityTokenUtils securityTokenUtils;
@@ -37,18 +42,14 @@ public class SysUserController extends BaseController {
     @PostMapping("/save")
     @ResponseBody
     public BaseResult save(@RequestBody SysUserReqVO req){
-        sysUserService.saveUser(req);
+        sysUserService.saveOrUpdateUser(req);
         return new BaseResult().success();
     }
 
     @PostMapping("/update")
     @ResponseBody
     public BaseResult update(@RequestBody SysUserReqVO req){
-        SysUser user = new SysUser();
-        BeanUtils.copyProperties(req,user);
-        user.setId(req.getId());
-        user.setUserName(req.getUsername());
-        sysUserService.update(user);
+        sysUserService.saveOrUpdateUser(req);
         return new BaseResult().success();
     }
 
@@ -100,6 +101,10 @@ public class SysUserController extends BaseController {
     public BaseResult<SysUserRespVO> get(@PathVariable Integer id){
         SysResult result = new SysResult();
         SysUserRespVO vo = sysUserService.queryById(id);
+        SysUserRoleReqVO sysUserRoleParam = new SysUserRoleReqVO();
+        sysUserRoleParam.setUserId(id);
+        List<SysUserRoleRespVO> roles = sysUserRoleService.listByReq(sysUserRoleParam);
+        vo.setRoles(roles);
         return result.success(vo);
     }
 

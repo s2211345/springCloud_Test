@@ -163,7 +163,7 @@ public class SysMenuController{
 	@PostMapping("/delete/{id}")
 	@ApiOperation(value = "删除")
 	public BaseResult delete(@PathVariable Integer id) {
-			sysMenuService.delete(id);
+		sysMenuService.deleteMenu(id);
 		return new BaseResult().success();
 	}
 

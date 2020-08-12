@@ -20,4 +20,7 @@ public class SysUserRoleRespVO extends BaseResponseView{
 	private Integer userId;
 	// 角色id
 	private Integer roleId;
+
+	//菜单名称
+	private String roleName;
 }

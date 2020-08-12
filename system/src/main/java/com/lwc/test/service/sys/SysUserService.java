@@ -6,5 +6,6 @@ import com.lwc.test.view.sys.request.SysUserReqVO;
 import com.lwc.test.view.sys.response.SysUserRespVO;
 
 public interface SysUserService extends BaseService<SysUser, SysUserReqVO, SysUserRespVO> {
-    void saveUser(SysUserReqVO req);
+    void saveOrUpdateUser(SysUserReqVO req);
+
 }
