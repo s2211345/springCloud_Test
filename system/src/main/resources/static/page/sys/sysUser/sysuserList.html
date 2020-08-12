@@ -37,6 +37,7 @@
 
 <script  src="/statics/js/layui/layui.js"></script>
 <script type="text/javascript" src="/statics/js/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="/statics/js/httpUtil.js"></script>
 <script type="text/javascript" src="/statics/js/layerView.js"></script>
 <script type="text/javascript">
 
@@ -84,9 +85,19 @@
 									{field: 'telePhone', title: '电话号码', width:150,totalRow: true},
 									{field: 'mailbox', title: '邮箱', width:150,totalRow: true},
 									{field: 'birthday', title: '生日', width:150,totalRow: true},
-									{field: 'sex', title: '性别', width:150,totalRow: true},
+									{field: 'sex', title: '性别', width:150,totalRow: true,templet:function(d){
+											return d.sex == true ? '男' : '女';
+										}},
 									{field: 'age', title: '年龄', width:150,totalRow: true},
-									{field: 'status', title: '状态 -1 禁用 1正常 -2 删除', width:150,totalRow: true},
+									{field: 'status', title: '状态 -1 禁用 1正常 -2 删除', width:150,totalRow: true,templet:function(d){
+										if(d.status == -1){
+											return '禁用';
+										}else if(d.status == 1){
+											return '正常';
+										}else if(d.status == -2){
+											return '删除';
+										}
+										}},
 									{field: 'createTime', title: '创建时间', width:150,totalRow: true},
 									{field: 'updateTime', title: '更新时间', width:150,totalRow: true},
 									{field: 'createUser', title: '创建用户', width:150,totalRow: true},

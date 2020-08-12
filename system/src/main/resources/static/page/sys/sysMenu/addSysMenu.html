@@ -101,11 +101,13 @@
 <script type="text/javascript" src="/statics/js/layer/layer.js"></script>
 <script type="text/javascript" src="/statics/js/vue/vue_v2.6.11.js"></script>
 <script src="/statics/js/element/index.js"></script>
+<script type="text/javascript" src="/statics/js/httpUtil.js"></script>
 <script type="text/javascript" src="/statics/js/layerView.js"></script>
 <script type="text/javascript">
 	var app = new Vue({
 		el: '#app',
 		data: {
+			defaultErrorMsg:'请检查数据是否填写完整',
 			form:{
 					id:'',
 					parentId:0,
@@ -134,7 +136,6 @@
 			}
 	},
 	beforeCreate: function(){
-		console.log("页面加载前执行");
 	},
 	mounted: function() {
 		var vm = this;
@@ -153,7 +154,9 @@
 			return bl;
 		},
 		valudatorDataMsg() {
-			this.$message.error('请见数据填写完整');
+			let vm = this;
+			this.$message.error(vm.defaultErrorMsg);
+			vm.defaultErrorMsg = '请检查数据是否填写完整';
 		},
 		getUrlParam : function (name) {
 			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -166,12 +169,9 @@
 			if(id == undefined || id == null || id == ""){
 				return;
 			}
-			$.ajax({
-				type : 'get',
-				url : '/admin/sysmenu/' + id,
-				contentType: "application/json; charset=utf-8",
-				async : false,
-				success : function(result) {
+			HTTP.GET({
+				url:'/admin/sysmenu/' + id,
+				okCall:function(result){
 					let data = result.data;
 					if(result.code == '200'){
 						vm.form = data;
@@ -182,23 +182,21 @@
 						}
 					}
 				}
-			});
+			})
 		},
 		initParentMenu : function(){
 			let vm = this;
-			$.ajax({
-				type : 'get',
-				url : '/admin/sysmenu/parents',
-				async : false,
-				success : function(data) {
+			HTTP.GET({
+				url:'/admin/sysmenu/parents',
+				okCall:function(result){
 					let ps = new Array();
 					let rootMenu = {
 						id:0,
 						name:'root'
 					}
 					ps.push(rootMenu)
-					for(var i=0; i<data.length; i++){
-						var d = data[i];
+					for(var i=0; i<result.length; i++){
+						var d = result[i];
 						let json = {
 							id:d['id'],
 							name:d['name']
@@ -207,7 +205,7 @@
 					}
 					vm.parentIds = ps;
 				}
-			});
+			})
 		}
 		,
 		selectCss : function(){

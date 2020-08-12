@@ -68,11 +68,13 @@
 <script type="text/javascript" src="/statics/layui/layui.js"></script>
 <script type="text/javascript" src="/statics/js/vue/vue_v2.6.11.js"></script>
 <script src="/statics/js/element/index.js"></script>
+<script type="text/javascript" src="/statics/js/httpUtil.js"></script>
 <script type="text/javascript" src="/statics/js/layerView.js"></script>
 <script type="text/javascript">
 	var app = new Vue({
 		el: '#app',
 		data: {
+			defaultErrorMsg:'请检查数据是否填写完整',
 			form:{
 					id:'',
 					userId:'',
@@ -82,8 +84,8 @@
 					createTime:'',
 					updateTime:'',
 			},
-	token:{},
-	rules:{
+			token:{},
+			rules:{
 					id:{required: true, message: '请输入', trigger: 'blur'},
 					userId:{required: true, message: '请输入用户id', trigger: 'blur'},
 					operation:{required: true, message: '请输入执行操作', trigger: 'blur'},
@@ -101,14 +103,33 @@
 		vm.token = {
 			token : localStorage.getItem("token")
 		}
+		//初始化数据
+		vm.initData();
 	},
 	methods: {
 		valudatorForm(){
 			let bl = true;
-																								return bl;
+			return bl;
 		},
 		valudatorDataMsg() {
-			this.$message.error('请见数据填写完整');
+			let vm = this;
+			this.$message.error(vm.defaultErrorMsg);
+			vm.defaultErrorMsg = '请检查数据是否填写完整';
+		},
+		initData: function() {
+			var vm = this;
+			var id = vm.getUrlParam("id");
+			if(id == undefined || id == null || id == ""){
+				return;
+			}
+			HTTP.GET({
+				url:'/admin/syslog/' + id,
+				okCall:function(result){
+					if(result.code == '200'){
+						vm.form = result.data;
+					}
+				}
+			})
 		},
 		getUrlParam : function (name) {
 			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");

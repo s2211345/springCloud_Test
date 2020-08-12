@@ -37,11 +37,13 @@
 <script type="text/javascript" src="/statics/js/layer/layer.js"></script>
 <script type="text/javascript" src="/statics/js/vue/vue_v2.6.11.js"></script>
 <script src="/statics/js/element/index.js"></script>
+<script type="text/javascript" src="/statics/js/httpUtil.js"></script>
 <script type="text/javascript" src="/statics/js/layerView.js"></script>
 <script type="text/javascript">
 	var app = new Vue({
 		el: '#app',
 		data: {
+			defaultErrorMsg:'请检查数据是否填写完整',
 			form:{
 #foreach($column in $columns)
 	${column.attrname}:'',
@@ -78,7 +80,9 @@
 			return bl;
 		},
 		valudatorDataMsg() {
-			this.$message.error('请见数据填写完整');
+			let vm = this;
+			this.$message.error(vm.defaultErrorMsg);
+			vm.defaultErrorMsg = '请检查数据是否填写完整';
 		},
 		initData: function() {
 			var vm = this;
@@ -86,18 +90,15 @@
 			if(id == undefined || id == null || id == ""){
 				return;
 			}
-			$.ajax({
-				type : 'get',
-				url : '/${project}/${pathName}/' + id,
-				contentType: "application/json; charset=utf-8",
-				async : false,
-				success : function(result) {
+			HTTP.GET({
+				url:'/${project}/${pathName}/' + id,
+				okCall:function(result) {
 					let data = result.data;
 					if(result.code == '200'){
 						vm.form = data;
 					}
 				}
-			});
+			})
 		},
 		getUrlParam : function (name) {
 			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");

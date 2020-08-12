@@ -14,6 +14,7 @@ import com.lwc.test.view.sys.response.SysUserRespVO;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,17 @@ public class SysUserController extends BaseController {
     @ResponseBody
     public BaseResult save(@RequestBody SysUserReqVO req){
         sysUserService.saveUser(req);
+        return new BaseResult().success();
+    }
+
+    @PostMapping("/update")
+    @ResponseBody
+    public BaseResult update(@RequestBody SysUserReqVO req){
+        SysUser user = new SysUser();
+        BeanUtils.copyProperties(req,user);
+        user.setId(req.getId());
+        user.setUserName(req.getUsername());
+        sysUserService.update(user);
         return new BaseResult().success();
     }
 

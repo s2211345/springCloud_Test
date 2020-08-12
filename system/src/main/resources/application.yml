@@ -46,3 +46,6 @@ token:
   expire:
     seconds: 7200
   jwtSecret: TEST;SPRINGBOOT;PROJECT;12345679
+sys:
+  user:
+    defaultPass: 123456

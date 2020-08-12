@@ -22,7 +22,7 @@ import java.util.List;
 public class SysUserReqVO extends BaseRequestView implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
+	private Integer id;
 	// 用户名
 	private String userName;
 	// 密码
@@ -51,6 +51,9 @@ public class SysUserReqVO extends BaseRequestView implements UserDetails {
 	private Date updateTime;
 	// 创建用户
 	private String createUser;
+
+	//角色
+	private int[] roles;
 
 	// 排序字段
 	private String sbyField;

@@ -37,6 +37,7 @@
 
 <script  src="../../layui/layui.js"></script>
 <script type="text/javascript" src="/statics/js/jquery/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="/statics/js/httpUtil.js"></script>
 <script type="text/javascript" src="/statics/js/layerView.js"></script>
 <script type="text/javascript">
 
@@ -105,7 +106,7 @@
 		//用户操作记录详情
 		function Detail(id){
 			//修改
-			var url = '/pages/sysLog/updateSysLog.html?id='+id;
+			var url = '/pages/sys/sysLog/addSysLog.html?id='+id;
 			var postUrl = '/syslog/update';
 			var title = "更新 | 用户操作记录";
 			LAYER_VIEW.submitBSForm({
@@ -135,7 +136,7 @@
 
 		$("#btAdd").on('click',function(){
 			//修改
-			var url = '/pages/sysLog/addSysLog.html';
+			var url = '/pages/sys/sysLog/addSysLog.html';
 			var postUrl = '/syslog/save';
 			var title = "新增 | 用户操作记录";
 			LAYER_VIEW.submitBSForm({

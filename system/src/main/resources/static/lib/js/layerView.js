@@ -11,14 +11,10 @@ var LAYER_VIEW ={
 		var index = top.layer.confirm(msg,{
 			btn: btns //按钮
 		}, function(){loading("数据处理中，请稍候");
-			$.ajax({
+			HTTP.POST({
 				url:url,
-				type:"POST",
 				data:JSON.stringify(data),
-				headers : headers
-				,  //登录标识
-				contentType: "application/json; charset=utf-8",
-				success:function(result){
+				okCall:function(result){
 					close_loading();
 					result.msg = result.msg || '操作成功';
 					if(result.code==successCode){
@@ -28,11 +24,11 @@ var LAYER_VIEW ={
 						top.layer.msg(result.msg,{icon:2});
 					}
 				},
-				error:function(request){
+				errorCall:function (result) {
 					close_loading();
 					top.layer.msg("加载失败",{icon:2});
 				}
-			});
+			})
 		}, function(){
 			top.layer.close(index);
 		});
@@ -94,31 +90,28 @@ var LAYER_VIEW ={
 				if(formVar){
 					jsonObj = formVar;
 				}
-				$.ajax({
+				console.log(jsonObj)
+				HTTP.POST({
 					url:postUrl,
-					type:"POST",
-					dataType:"json",
 					data:JSON.stringify(jsonObj),
-					headers : headers,
-					contentType: "application/json; charset=utf-8",
-					async: false,
-					success: function(data) {
+					okCall:function(result){
 						close_loading();
-						data.msg = data.msg || '操作成功';
-						if(data.code == "0" || data.code == "200"){
-							top.layer.msg(data.msg ,{icon:1});
-							_success_callback(data);
+						result.msg = result.msg || '操作成功';
+						if(result.code == "0" || result.code == "200"){
+							top.layer.msg(result.msg ,{icon:1});
+							_success_callback(result);
 							top.layer.close(index);
 						}else{
 							close_loading();
-							top.layer.msg(data.msg,{icon:2});
+							top.layer.msg(result.msg,{icon:2});
 							return false;
 						}
 					},
-					error:function(request){
+					errorCall:function (result) {
+						close_loading();
 						top.layer.msg("加载失败",{icon:2});
 					}
-				});
+				})
 			},
 			no:function(index, layero){
 				//按钮【按钮二】的回调

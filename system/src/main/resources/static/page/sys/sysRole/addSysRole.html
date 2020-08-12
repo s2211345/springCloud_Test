@@ -66,12 +66,13 @@
 <script type="text/javascript" src="/statics/js/layui/layui.js"></script>
 <script type="text/javascript" src="/statics/js/vue/vue_v2.6.11.js"></script>
 <script src="/statics/js/element/index.js"></script>
+<script type="text/javascript" src="/statics/js/httpUtil.js"></script>
 <script type="text/javascript" src="/statics/js/layerView.js"></script>
 <script type="text/javascript">
 	var app = new Vue({
 		el: '#app',
-
 		data: {
+			defaultErrorMsg:'请检查数据是否填写完整',
 			form:{
 					id:'',
 					name:'',
@@ -96,7 +97,6 @@
 			}
 	},
 	beforeCreate: function(){
-		console.log("页面加载前执行");
 	},
 	mounted: function() {
 		let vm = this;
@@ -117,21 +117,19 @@
 			return bl;
 		},
 		valudatorDataMsg() {
-			this.$message.error('请见数据填写完整');
+			let vm = this;
+			this.$message.error(vm.defaultErrorMsg);
+			vm.defaultErrorMsg = '请检查数据是否填写完整';
 		},
 		initTree:function(){
 			var vm = this;
 			var id = vm.getUrlParam("id");
-			$.ajax({
-				type : 'get',
-				url : '/admin/sysmenu/getList',
-				contentType: "application/json; charset=utf-8",
-				async : false,
-				success : function(data) {
-					vm.setRoleChild(data);
-					// vm.roles = data;
+			HTTP.GET({
+				url:'/admin/sysmenu/getList',
+				okCall:function(result){
+					vm.setRoleChild(result);
 				}
-			});
+			})
 		},
 		setRoleChild : function(data){
 			let vm = this;
@@ -173,12 +171,9 @@
 			if(id == undefined || id == null || id == ""){
 				return;
 			}
-			$.ajax({
-				type : 'get',
-				url : '/admin/sysrole/' + id,
-				contentType: "application/json; charset=utf-8",
-				async : false,
-				success : function(result) {
+			HTTP.GET({
+				url:'/admin/sysrole/' + id,
+				okCall:function(result){
 					let data = result.data;
 					if(result.code == '200'){
 						vm.form = data;
@@ -194,7 +189,6 @@
 									}
 								}
 							}
-							console.log(menuList)
 							vm.$nextTick(() => {
 								vm.$refs.roleTree.setCheckedKeys(menuList,true);
 							});
@@ -202,7 +196,7 @@
 						}
 					}
 				}
-			});
+			})
 		},
 		getUrlParam : function (name) {
 			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");

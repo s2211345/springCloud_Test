@@ -1,17 +1,17 @@
 var HTTP ={
 	GET: function(options){
-		var url = options.url || ''
-		var contentType = options.contentType || 'application/json; charset=utf-8';
-		var okCall = options.okCall || {};
-		var errorCall = options.errorCall || null;
-		var data = options.data || '';
-		var async = options.async || false;
+		let url = options.url || ''
+		let contentType = options.contentType || 'application/json; charset=utf-8';
+		let okCall = options.okCall || {};
+		let errorCall = options.errorCall || null;
+		let data = options.data || '';
+		let async = options.async || false;
 
 		let authAccess = getAccessToken('authAccess');
 		if(!authAccess){
 			authAccess.token = ''
 		}
-		var headers = options.headers || {
+		let headers = options.headers || {
 			'Authorization': authAccess.token
 		};
 		//过去1个小时刷新一次token
@@ -48,25 +48,25 @@ var HTTP ={
 			success : function(result) {
 				okCall(result);
 			},
-			error:function(xhr, textStatus, errorThrown){
+			error:function(result){
 				if(errorCall){
-					errorCall(xhr, textStatus, errorThrown)
-				}else{
-					top.layer.msg("执行失败",{icon:2});
+					errorCall(result);
 				}
 			}
 		});
 	},
 	POST:function(options){
-		var url = options.url || ''
-		var contentType = options.contentType || 'application/json; charset=utf-8';
-		var okCall = options.okCall || {};
-		var data = options.data || {};
+		let url = options.url || ''
+		let contentType = options.contentType || 'application/json; charset=utf-8';
+		let okCall = options.okCall || {};
+		let errorCall = options.errorCall || {};
+		let data = options.data || {};
+		let dataType = options.dataType || 'json';
 		let authAccess = getAccessToken('authAccess');
 		if(!authAccess){
 			authAccess.token = ''
 		}
-		var headers = options.headers || {
+		let headers = options.headers || {
 			'Authorization': authAccess.token
 		};
 		//过去1个小时刷新一次token
@@ -92,22 +92,24 @@ var HTTP ={
 					}
 				},
 				error:function(xhr, textStatus, errorThrown){
-					if(errorCall){
-						errorCall(xhr, textStatus, errorThrown)
-					}else{
-						top.layer.msg("执行失败",{icon:2});
-					}
+					top.layer.msg("执行失败",{icon:2});
 				}
 			});
 		}
 		$.ajax({
 			type : 'post',
 			url : url,
+			dataType:dataType,
 			contentType: contentType,
-			data:JSON.stringify(data),
+			data:data,
 			headers: headers,
 			success : function(result) {
 				okCall(result);
+			},
+			error:function(request){
+				if(errorCall){
+					errorCall(result);
+				}
 			}
 		});
 	},

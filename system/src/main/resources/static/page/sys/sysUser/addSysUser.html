@@ -27,13 +27,6 @@
         </el-row>
         <el-row :gutter="20" class="firstDiv">
             <el-col :span="15" :push="1">
-                <el-form-item label="密码：" span="12" prop="password">
-                    <el-input v-model="form.password" name="password"></el-input>
-                </el-form-item>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20" class="firstDiv">
-            <el-col :span="15" :push="1">
                 <el-form-item label="真实姓名：" span="12" prop="actualName">
                     <el-input v-model="form.actualName" name="actualName"></el-input>
                 </el-form-item>
@@ -69,22 +62,44 @@
         </el-row>
         <el-row :gutter="20" class="firstDiv">
             <el-col :span="15" :push="1">
+                <el-form-item label="年龄：" span="12" prop="age">
+                    <el-input v-model="form.age" name="age"></el-input>
+                </el-form-item>
+            </el-col>
+        </el-row>
+        <el-row :gutter="20" class="firstDiv">
+            <el-col :span="15" :push="1">
                 <el-form-item label="生日：" span="12" prop="birthday">
-                    <el-input v-model="form.birthday" name="birthday"></el-input>
+                    <el-date-picker
+                            v-model="form.birthday"
+                            type="date"
+                            format="yyyy 年 MM 月 dd 日"
+                            value-format="yyyy-MM-dd"
+                            placeholder="选择日期">
+                    </el-date-picker>
                 </el-form-item>
             </el-col>
         </el-row>
         <el-row :gutter="20" class="firstDiv">
             <el-col :span="15" :push="1">
                 <el-form-item label="性别：" span="12" prop="sex">
-                    <el-input v-model="form.sex" name="sex"></el-input>
+                    <el-select v-model="form.sex" placeholder="请选择">
+                        <el-option
+                                v-for="sex in sexs"
+                                :key="sex.value"
+                                :label="sex.label"
+                                :value="sex.value">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
             </el-col>
         </el-row>
         <el-row :gutter="20" class="firstDiv">
             <el-col :span="15" :push="1">
-                <el-form-item label="年龄：" span="12" prop="age">
-                    <el-input v-model="form.age" name="age"></el-input>
+                <el-form-item label="角色：" span="12" prop="sex">
+                    <el-checkbox-group v-model="form.roles">
+                        <el-checkbox v-for="(role,index) in roles" label="role.name" value="role.id"></el-checkbox>
+                    </el-checkbox-group>
                 </el-form-item>
             </el-col>
         </el-row>
@@ -95,33 +110,32 @@
 <script type="text/javascript" src="/statics/js/layer/layer.js"></script>
 <script type="text/javascript" src="/statics/js/vue/vue_v2.6.11.js"></script>
 <script src="/statics/js/element/index.js"></script>
+<script type="text/javascript" src="/statics/js/httpUtil.js"></script>
 <script type="text/javascript" src="/statics/js/layerView.js"></script>
 <script type="text/javascript">
     var app = new Vue({
         el: '#app',
         data: {
+            defaultErrorMsg:'请检查数据是否填写完整',
             form: {
                 id: '',
                 userName: '',
-                password: '',
                 actualName: '',
                 headImgUrl: '',
                 phone: '',
                 telePhone: '',
                 mailbox: '',
                 birthday: '',
-                sex: '',
+                sex: true,
                 age: '',
-                status: '',
-                createTime: '',
-                updateTime: '',
-                createUser: '',
+                roles: [],
             },
+            roles:[],
+            sexs:[{label:'男',value:true},{label:'女',value:false}],
             token: {},
             rules: {
                 id: {required: true, message: '请输入', trigger: 'blur'},
                 userName: {required: true, message: '请输入用户名', trigger: 'blur'},
-                password: {required: true, message: '请输入密码', trigger: 'blur'},
                 actualName: {required: true, message: '请输入真实姓名', trigger: 'blur'},
                 headImgUrl: {required: true, message: '请输入头像', trigger: 'blur'},
                 phone: {required: true, message: '请输入手机号码', trigger: 'blur'},
@@ -129,12 +143,10 @@
                 mailbox: {required: true, message: '请输入邮箱', trigger: 'blur'},
                 birthday: {required: true, message: '请输入生日', trigger: 'blur'},
                 sex: {required: true, message: '请输入性别', trigger: 'blur'},
-                age: {required: true, message: '请输入年龄', trigger: 'blur'},
-                status: {required: true, message: '请输入状态 -1 禁用 1正常 -2 删除', trigger: 'blur'}
+                age: {required: true, message: '请输入年龄', trigger: 'blur'}
             }
         },
         beforeCreate: function () {
-            console.log("页面加载前执行");
         },
         mounted: function () {
             let vm = this;
@@ -146,11 +158,29 @@
         },
         methods: {
             valudatorForm() {
+                let vm = this;
                 let bl = true;
+                this.$refs['form'].validate((valid) => {
+                    if (valid) {
+                        bl = true;
+                    } else {
+                        bl = false;
+                    }
+                })
+                if(!(/^1[3456789]\d{9}$/.test(vm.form.phone))){
+                    bl = false;
+                    vm.defaultErrorMsg = '手机号格式不正确，请检查';
+                }
+                if(!(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/.test(vm.form.mailbox))){
+                    bl = false;
+                    vm.defaultErrorMsg = '邮箱号格式不正确，请检查';
+                }
                 return bl;
             },
             valudatorDataMsg() {
-                this.$message.error('请见数据填写完整');
+                let vm = this;
+                this.$message.error(vm.defaultErrorMsg);
+                vm.defaultErrorMsg = '请检查数据是否填写完整';
             },
             initData: function () {
                 var vm = this;
@@ -158,18 +188,20 @@
                 if (id == undefined || id == null || id == "") {
                     return;
                 }
-                $.ajax({
-                    type: 'get',
-                    url: '/admin/sysUser/' + id,
-                    contentType: "application/json; charset=utf-8",
-                    async: false,
-                    success: function (data) {
-                        if (data.code == '200') {
-                            vm.form = data.data;
-                            vm.form.userName = data.data.username;
+                HTTP.GET({
+                    url:'/admin/sysUser/' + id,
+                    okCall:function(result){
+                        let data = result.data;
+                        if (result.code == '200') {
+                            vm.form = data;
+                            vm.form.userName = data.username;
+                            console.log(vm.form.sex)
                         }
                     }
-                });
+                })
+            },
+            initRole:function(){
+
             },
             getUrlParam: function (name) {
                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
