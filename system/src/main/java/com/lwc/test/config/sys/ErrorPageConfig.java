@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 
+/**
+ * 异常页面映射
+ */
 @Configuration
 public class ErrorPageConfig {
     @Bean

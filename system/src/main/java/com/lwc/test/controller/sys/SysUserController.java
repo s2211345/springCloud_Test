@@ -42,8 +42,7 @@ public class SysUserController extends BaseController {
     @PostMapping("/save")
     @ResponseBody
     public BaseResult save(@RequestBody SysUserReqVO req){
-        sysUserService.saveOrUpdateUser(req);
-        return new BaseResult().success();
+        return sysUserService.saveOrUpdateUser(req);
     }
 
     @PostMapping("/update")

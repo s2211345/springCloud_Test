@@ -1,9 +1,12 @@
 var LAYER_VIEW ={
 	confirmPost: function(options){
+		let authAccess = getAccessToken('authAccess');
 		var btns = options.btns || ['确认', '取消'];
 		var url = options.url || '';
 		var data = options.data || {};
-		var headers = options.headers || {};
+		var headers = options.headers || {
+			'Authorization': authAccess.token
+		};
 		var msg = options.msg || '请确认';
 		var successCode = options.successCode || '200';
 		var callback = options.callback || function(){};
@@ -13,6 +16,7 @@ var LAYER_VIEW ={
 		}, function(){loading("数据处理中，请稍候");
 			HTTP.POST({
 				url:url,
+				headers:headers,
 				data:JSON.stringify(data),
 				okCall:function(result){
 					close_loading();
@@ -34,6 +38,7 @@ var LAYER_VIEW ={
 		});
 	},
 	submitBSForm:function(options){
+		let authAccess = getAccessToken('authAccess');
 		var _name = options.name;
 		var _url = options.url;
 		var postUrl = options.postUrl;
@@ -46,7 +51,9 @@ var LAYER_VIEW ={
 		var _form_id = _name;
 		var _area = options.area || ['900px','600px'];
 		var _params = options.params || "";
-		var headers = options.headers || {};
+		var headers = options.headers || {
+			'Authorization': authAccess.token
+		};
 		var _before_submit = options.before_submit || function(FormID,layero){};
 		var _success_callback = options.success_callback || function(data){};
 		//页面层
@@ -90,9 +97,9 @@ var LAYER_VIEW ={
 				if(formVar){
 					jsonObj = formVar;
 				}
-				console.log(jsonObj)
 				HTTP.POST({
 					url:postUrl,
+					headers:headers,
 					data:JSON.stringify(jsonObj),
 					okCall:function(result){
 						close_loading();
@@ -205,9 +212,15 @@ var LAYER_VIEW ={
 		}
 		img.src = config.src;
 	},
-	clickToEnlarge : function (div,ele,eve) {
+	/**
+	 * LAYER_VIEW.clickToEnlarge('#form','img','click');
+	 * @param div   外层div
+	 * @param target 目标
+	 * @param eve  事件
+	 */
+	clickToEnlarge : function (div,target,eve) {
 		//图片点击放大
-		$(div).on(eve, ele, function(){
+		$(div).on(eve, target, function(){
 			LAYER_VIEW.previewImg({
 				src:$(this).attr('src')
 			});

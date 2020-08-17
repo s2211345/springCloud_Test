@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 跨域处理
+ */
 @Slf4j
 @Order(Integer.MIN_VALUE + 1)
 @WebFilter(urlPatterns = "/*", filterName = "corsFilter", asyncSupported = true)

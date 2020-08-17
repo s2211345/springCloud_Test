@@ -10,6 +10,7 @@ import com.lwc.test.service.sys.SysUserService;
 import com.lwc.test.service.base.impl.BaseServiceImpl;
 import com.lwc.test.service.sys.impl.security.SecurityUserDetailsServiceImpl;
 import com.lwc.test.utils.SecurityTokenUtils;
+import com.lwc.test.view.base.response.BaseResult;
 import com.lwc.test.view.sys.request.SysUserReqVO;
 import com.lwc.test.view.sys.response.SysUserRespVO;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,12 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser, SysUserReqVO, S
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveOrUpdateUser(SysUserReqVO req) {
+    public BaseResult saveOrUpdateUser(SysUserReqVO req) {
+        SysUserReqVO userQuery = new SysUserReqVO();
+        userQuery.setUserName(req.getUsername());
+        if(null != dao.queryByReq(userQuery)){
+            return new BaseResult().fail("用户名已存在，请重新填写");
+        }
         SysUser user = new SysUser();
         BeanUtils.copyProperties(req,user);
         user.setId(req.getId());
@@ -68,6 +74,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<SysUser, SysUserReqVO, S
         }else{
             update(user);
         }
+        return new BaseResult().success();
     }
 
     @Override

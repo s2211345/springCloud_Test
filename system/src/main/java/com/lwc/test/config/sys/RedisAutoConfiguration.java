@@ -13,6 +13,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.net.UnknownHostException;
 
+/**
+ * Redis注入
+ */
 @Configuration
 @ConditionalOnClass(RedisOperations.class)
 @EnableConfigurationProperties(RedisProperties.class)
