@@ -30,7 +30,7 @@
     <commons-lang3.version>3.7</commons-lang3.version>
     <spring.test.version>5.2.7.RELEASE</spring.test.version>
     <commons.lang.version>2.6</commons.lang.version>
-    <junit.version>4.12</junit.version>
+    <junit.version>4.13.1</junit.version>
     <alibaba.fastjson.version>1.2.72</alibaba.fastjson.version>
     <commons.configuration.version>1.8</commons.configuration.version>
     <mybatis.plus.version>3.3.2</mybatis.plus.version>
